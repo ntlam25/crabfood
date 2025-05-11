@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main_navigation"
+    app:startDestination="@id/homeFragment">
+
+    <fragment
+        android:id="@+id/homeFragment"
+        android:name="com.example.crabfood.ui.home.HomeFragment"
+        android:label="@string/title_home"
+        tools:layout="@layout/fragment_home" >
+        <action
+            android:id="@+id/action_homeFragment_to_allCategoriesFragment"
+                app:destination="@id/allCategoriesFragment" />
+    </fragment>
+
+    <action
+        android:id="@+id/action_home_to_view_all_vendor_nearby"
+        app:destination="@id/allVendorsNearby" />
+
+    <fragment
+        android:id="@+id/ordersFragment"
+        android:name="com.example.crabfood.ui.order.OrderFragment"
+        android:label="@string/title_orders"
+        tools:layout="@layout/fragment_order" >
+    </fragment>
+
+    <fragment
+        android:id="@+id/favoriteFragment"
+        android:name="com.example.crabfood.ui.favorite.FavoriteFragment"
+        android:label="@string/title_favorite"
+        tools:layout="@layout/fragment_favorite" >-->
+    </fragment>
+
+    <fragment
+        android:id="@+id/profileFragment"
+        android:name="com.example.crabfood.ui.profile.ProfileFragment"
+        android:label="@string/title_profile"
+        tools:layout="@layout/fragment_profile" >
+<!--        <action-->
+<!--            android:id="@+id/action_profileFragment_to_addressManagementFragment"-->
+<!--            app:destination="@id/addressManagementFragment" />-->
+    </fragment>
+
+    <action
+        android:id="@+id/action_to_detail_category"
+        app:destination="@id/detailCategory" />
+
+    <fragment
+        android:id="@+id/allVendorsNearby"
+        android:name="com.example.crabfood.ui.vendor.AllVendorNearbyFragment"
+        android:label="@string/nearby_restaurants"
+        tools:layout="@layout/fragment_all_vendor_nearby">
+
+        <argument
+            android:name="latitude"
+            app:argType="float"
+            android:defaultValue="21.02795" />
+
+        <argument
+            android:name="latitude"
+            app:argType="float"
+            android:defaultValue="105.83416" />
+
+        <argument
+            android:name="radius"
+            app:argType="float"
+            android:defaultValue="5.0" />
+    </fragment>
+    <fragment
+        android:id="@+id/vendorListFragment"
+        android:name="com.example.crabfood.ui.vendor.VendorListFragment"
+        android:label="@string/nearby_restaurants"
+        tools:layout="@layout/fragment_vendor_list">
+
+        <argument
+            android:name="latitude"
+            app:argType="float"
+            android:defaultValue="21.02795" />
+
+        <argument
+            android:name="latitude"
+            app:argType="float"
+            android:defaultValue="105.83416" />
+
+        <argument
+            android:name="radius"
+            app:argType="float"
+            android:defaultValue="5.0" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/vendorDetailFragment"
+        android:name="com.example.crabfood.ui.vendor.VendorDetailFragment"
+        android:label="@string/detail_vendor"
+        tools:layout="@layout/fragment_vendor_detail">
+
+        <argument
+            android:name="vendorId"
+            app:argType="long"
+            android:defaultValue="@null" />
+        <!-- Action to navigate to Cart -->
+        <action
+            android:id="@+id/action_vendorDetailFragment_to_cartFragment"
+            app:destination="@id/cartFragment" />
+    </fragment>
+
+    <action
+        android:id="@+id/action_to_detail_vendor"
+        app:destination="@id/vendorDetailFragment" />
+
+    <action
+        android:id="@+id/action_to_food_detail"
+        app:destination="@id/foodDetailFragment" />
+    <fragment
+        android:id="@+id/allCategoriesFragment"
+        android:name="com.example.crabfood.ui.category.AllCategoriesFragment"
+        android:label="All Categories"
+        tools:layout="@layout/fragment_all_categories" />
+    <fragment
+        android:id="@+id/detailCategory"
+        android:name="com.example.crabfood.ui.category.DetailCategoryFragment"
+        android:label="Food List">
+        <argument
+            android:name="categoryId"
+            android:defaultValue="@null"
+            app:argType="long" />
+        <argument
+            android:name="categoryName"
+            android:defaultValue="Food"
+            app:argType="string" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/foodDetailFragment"
+        android:name="com.example.crabfood.ui.food.FoodDetailFragment"
+        android:label="Chi tiết món ăn"
+        tools:layout="@layout/fragment_food_detail">
+        <argument
+            android:name="foodId"
+            app:argType="long" />
+    </fragment>
+    <action
+        android:id="@+id/action_to_cart_fragment"
+        app:destination="@id/cartFragment" />
+    <fragment
+        android:id="@+id/cartFragment"
+        android:name="com.example.crabfood.ui.cart.CartFragment"
+        android:label="Giỏ hàng"
+        tools:layout="@layout/fragment_cart" />
+
+</navigation>

@@ -1,0 +1,313 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Crab Food</string>
+
+    <!-- Existing strings... -->
+    <string name="cart_empty">Giỏ hàng trống</string>
+    <string name="cart_clear_confirm">Bạn có muốn xóa tất cả sản phẩm khỏi giỏ hàng?</string>
+
+    <!-- Login and Registration -->
+    <string name="login_title">Đăng nhập</string>
+    <string name="login_subtitle">Đăng nhập để đặt món ăn yêu thích của bạn</string>
+    <string name="tab_email">Email</string>
+    <string name="tab_phone">Số điện thoại</string>
+    <string name="hint_email">Email</string>
+    <string name="hint_password">Mật khẩu</string>
+    <string name="hint_phone">Số điện thoại</string>
+    <string name="hint_otp">Mã OTP</string>
+    <string name="btn_login">Đăng nhập</string>
+    <string name="btn_send_otp">Gửi OTP</string>
+    <string name="btn_verify_otp">Xác nhận</string>
+    <string name="forgot_password">Quên mật khẩu?</string>
+    <string name="register_prompt">Chưa có tài khoản?</string>
+    <string name="btn_register">Đăng ký ngay</string>
+    <string name="otp_sent">Mã OTP đã được gửi đến số điện thoại của bạn</string>
+    <string name="resend_otp">Gửi lại OTP</string>
+    <string name="hint_username">Username</string>
+
+    <string name="register_title">Đăng ký</string>
+    <string name="register_subtitle">Tạo tài khoản để sử dụng ứng dụng</string>
+    <string name="hint_full_name">Họ và tên</string>
+    <string name="hint_confirm_password">Xác nhận mật khẩu</string>
+    <string name="login_prompt">Đã có tài khoản?</string>
+    <string name="btn_login_now">Đăng nhập ngay</string>
+
+    <!-- Home Screen -->
+    <string name="title_home">Trang chủ</string>
+    <string name="title_notification">Thông báo</string>
+    <string name="title_favorite">Yêu thích</string>
+    <string name="title_nearby">Gần đây</string>
+    <string name="title_cart">Giỏ hàng</string>
+    <string name="title_orders">Đơn hàng</string>
+    <string name="title_profile">Tài khoản</string>
+    <string name="search_restaurants">Tìm nhà hàng, món ăn...</string>
+    <string name="welcome_message">Xin chào</string>
+    <string name="deliver_to">Giao hàng đến</string>
+    <string name="popular_restaurants">Nhà hàng phổ biến</string>
+    <string name="popular_dishes">Món ăn phổ biến</string>
+    <string name="view_all">Xem tất cả</string>
+    <string name="categories">Danh mục</string>
+    <string name="offers">Ưu đãi</string>
+
+    <!-- Restaurant Listings -->
+    <string name="filter_restaurants">Lọc</string>
+    <string name="sort_restaurants">Sắp xếp</string>
+    <string name="cuisine_type">Loại ẩm thực</string>
+    <string name="price_range">Mức giá</string>
+    <string name="rating">Đánh giá</string>
+    <string name="distance">Khoảng cách</string>
+    <string name="apply_filters">Áp dụng</string>
+    <string name="reset_filters">Đặt lại</string>
+    <string name="restaurant_distance">%1$s km</string>
+    <string name="restaurant_delivery_time">%1$d phút</string>
+    <string name="restaurant_rating">%1$.1f</string>
+    <string name="no_vendors_found">Không tìm thấy nhà hàng phù hợp</string>
+    <string name="error_loading_vendors">Lỗi tải danh sách nhà hàng</string>
+
+    <!-- Restaurant Detail -->
+    <string name="menu">Thực đơn</string>
+    <string name="reviews">Đánh giá</string>
+    <string name="info">Thông tin</string>
+    <string name="opening_hours">Giờ mở cửa</string>
+    <string name="address">Địa chỉ</string>
+    <string name="phone_number">Số điện thoại</string>
+    <string name="add_to_cart">Thêm vào giỏ hàng</string>
+    <string name="quantity">Số lượng</string>
+    <string name="add_notes">Thêm ghi chú</string>
+    <string name="vegetarian">Chay</string>
+    <string name="vegan">Thuần chay</string>
+    <string name="gluten_free">Không gluten</string>
+
+    <!-- Cart -->
+    <string name="start_shopping">Bắt đầu mua sắm</string>
+    <string name="cart_items">Giỏ hàng (%1$d)</string>
+    <string name="subtotal">Tạm tính</string>
+    <string name="delivery_fee">Phí giao hàng</string>
+    <string name="tax">Thuế</string>
+    <string name="total">Tổng cộng</string>
+    <string name="checkout">Thanh toán</string>
+    <string name="from_restaurant">Từ %1$s</string>
+    <string name="remove_item">Xoá</string>
+    <string name="clear_cart">Xoá giỏ hàng</string>
+
+    <!-- Checkout -->
+    <string name="checkout_title">Thanh toán</string>
+    <string name="delivery_address">Địa chỉ giao hàng</string>
+    <string name="change_address">Thay đổi</string>
+    <string name="payment_method">Phương thức thanh toán</string>
+    <string name="cash_on_delivery">Tiền mặt khi nhận hàng</string>
+    <string name="credit_card">Thẻ tín dụng</string>
+    <string name="order_summary">Tóm tắt đơn hàng</string>
+    <string name="estimated_delivery">Thời gian giao hàng dự kiến: %1$d phút</string>
+    <string name="place_order">Đặt hàng</string>
+
+    <!-- Order Tracking -->
+    <string name="order_tracking">Theo dõi đơn hàng</string>
+    <string name="order_id">Mã đơn hàng: #%1$s</string>
+    <string name="order_status">Trạng thái đơn hàng</string>
+    <string name="order_placed">Đã đặt hàng</string>
+    <string name="order_confirmed">Đã xác nhận</string>
+    <string name="order_preparing">Đang chuẩn bị</string>
+    <string name="order_ready">Sẵn sàng giao hàng</string>
+    <string name="order_out_for_delivery">Đang giao hàng</string>
+    <string name="order_delivered">Đã giao hàng</string>
+    <string name="order_cancelled">Đã hủy</string>
+    <string name="order_placed_time">Đặt lúc %1$s</string>
+    <string name="estimated_arrival">Thời gian giao hàng dự kiến: %1$s</string>
+    <string name="contact_driver">Liên hệ tài xế</string>
+    <string name="cancel_order">Hủy đơn hàng</string>
+
+    <!-- Address Management -->
+    <string name="my_addresses">Địa chỉ của tôi</string>
+    <string name="add_address">Thêm địa chỉ mới</string>
+    <string name="edit_address">Sửa địa chỉ</string>
+    <string name="hint_address_label">Nhãn (ví dụ: Nhà, Văn phòng)</string>
+    <string name="hint_full_address">Địa chỉ chi tiết</string>
+    <string name="hint_city">Thành phố</string>
+    <string name="hint_state">Tỉnh/Thành phố</string>
+    <string name="hint_zip_code">Mã bưu điện</string>
+    <string name="set_as_default">Đặt làm địa chỉ mặc định</string>
+    <string name="get_current_location">Lấy vị trí hiện tại</string>
+    <string name="save_address">Lưu địa chỉ</string>
+    <string name="delete_address">Xoá địa chỉ</string>
+
+    <!-- Profile -->
+    <string name="my_profile">Hồ sơ của tôi</string>
+    <string name="edit_profile">Chỉnh sửa hồ sơ</string>
+    <string name="save_profile">Lưu hồ sơ</string>
+    <string name="personal_information">Thông tin cá nhân</string>
+    <string name="change_password">Đổi mật khẩu</string>
+    <string name="payment_methods">Phương thức thanh toán</string>
+    <string name="notification_settings">Cài đặt thông báo</string>
+    <string name="language">Ngôn ngữ</string>
+    <string name="dark_mode">Chế độ tối</string>
+    <string name="about">Giới thiệu</string>
+    <string name="logout">Đăng xuất</string>
+
+    <!-- Error Messages -->
+    <string name="error_field_required">Trường này là bắt buộc</string>
+    <string name="error_invalid_email">Email không hợp lệ</string>
+    <string name="error_invalid_password">Mật khẩu phải có ít nhất 6 ký tự</string>
+    <string name="error_passwords_dont_match">Mật khẩu không khớp</string>
+    <string name="error_invalid_phone">Số điện thoại không hợp lệ</string>
+    <string name="error_invalid_otp">Mã OTP không hợp lệ</string>
+    <string name="error_network">Lỗi kết nối mạng. Vui lòng thử lại.</string>
+    <string name="error_location_permission">Cần quyền truy cập vị trí để sử dụng tính năng này</string>
+    <string name="error_login">Đăng nhập thất bại. Vui lòng kiểm tra tài khoản và mật khẩu.</string>
+    <string name="error_registration">Đăng ký thất bại. Vui lòng thử lại.</string>
+    <string name="error_order_failed">Đặt hàng thất bại. Vui lòng thử lại.</string>
+
+    <!-- Success Messages -->
+    <string name="success_login">Đăng nhập thành công</string>
+    <string name="success_registration">Đăng ký thành công</string>
+    <string name="success_profile_update">Cập nhật hồ sơ thành công</string>
+    <string name="success_address_added">Thêm địa chỉ thành công</string>
+    <string name="success_address_updated">Cập nhật địa chỉ thành công</string>
+    <string name="success_address_deleted">Xoá địa chỉ thành công</string>
+    <string name="success_order_placed">Đặt hàng thành công</string>
+    <string name="success_password_reset">Yêu cầu đặt lại mật khẩu đã được gửi đến email của bạn</string>
+
+    <!-- Notifications -->
+    <string name="notification_channel_orders">Thông báo đơn hàng</string>
+    <string name="notification_channel_offers">Thông báo ưu đãi</string>
+    <string name="notification_order_status">Trạng thái đơn hàng đã cập nhật</string>
+    <string name="notification_new_offer">Ưu đãi mới</string>
+
+    <!-- Misc -->
+    <string name="loading">Đang tải...</string>
+    <string name="yes">Có</string>
+    <string name="no">Không</string>
+    <string name="ok">OK</string>
+    <string name="cancel">Hủy</string>
+    <string name="save">Lưu</string>
+    <string name="delete">Xoá</string>
+    <string name="edit">Sửa</string>
+    <string name="default_notification_channel_id">orders_channel</string>
+
+    <!-- Common strings -->
+    <string name="back">Back</string>
+    <string name="next">Next</string>
+    <string name="submit">Submit</string>
+    <string name="search">Search</string>
+    <string name="retry">Retry</string>
+    <string name="no_category">Không tìm thấy danh mục nào</string>
+
+    <!-- Auth strings -->
+    <string name="login">Login</string>
+    <string name="register">Register</string>
+    <string name="email">Email</string>
+    <string name="password">Password</string>
+    <string name="full_name">Full Name</string>
+    <string name="verify_otp">Verify OTP</string>
+    <string name="dont_have_account">Don\'t have an account?</string>
+    <string name="already_have_account">Already have an account?</string>
+    <string name="signup_now">Sign up now</string>
+    <string name="enter_otp">Enter verification code</string>
+    <string name="otp_verification">OTP Verification</string>
+    <string name="otp_instructions">We have sent a verification code to your phone</string>
+
+    <!-- Home screen -->
+    <string name="home">Home</string>
+    <string name="nearby_restaurants">Nhà hàng gần đây</string>
+    <string name="featured_items">Món ăn nổi bật</string>
+    <string name="see_all">See All</string>
+    <string name="delivery_location">Địa chỉ giao hàng</string>
+    <string name="change_location">Thay đổi</string>
+    <string name="view_cart">Xem giỏ hàng</string>
+
+    <!-- Restaurant detail -->
+    <string name="delivery_time">Delivery Time</string>
+    <string name="detail_vendor">Chi tiết nhà hàng</string>
+    <string name="min_order">Min. Order</string>
+    <string name="closed">Closed</string>
+    <string name="open">Open</string>
+
+    <!-- Food detail -->
+    <string name="special_instructions">Special Instructions</string>
+    <string name="choose_options">Choose Options</string>
+    <string name="price">Price</string>
+    <string name="total_price">Total Price</string>
+    <string name="description">Description</string>
+    <string name="preparation_time">Preparation Time</string>
+
+    <!-- Cart -->
+    <string name="cart">Cart</string>
+    <string name="empty_cart">Your cart is empty</string>
+    <string name="proceed_to_checkout">Proceed to Checkout</string>
+    <string name="apply_coupon">Apply Coupon</string>
+    <string name="coupon_code">Coupon Code</string>
+
+    <!-- Checkout -->
+    <string name="delivery_instructions">Delivery Instructions</string>
+    <string name="add_new_address">Add New Address</string>
+
+    <!-- Order tracking -->
+    <string name="preparing">Đang chuẩn bị</string>
+    <string name="on_the_way">Đang trên đường</string>
+    <string name="delivered">Đã giao hàng</string>
+    <string name="cancelled">Đã huỷ</string>
+    <string name="estimated_delivery_time">Estimated Delivery Time</string>
+    <string name="rider_information">Rider Information</string>
+    <string name="call_rider">Call Rider</string>
+    <string name="track_order">Track Order</string>
+    <string name="order_details">Order Details</string>
+
+    <!-- Profile -->
+    <string name="profile">Profile</string>
+    <string name="my_orders">My Orders</string>
+    <string name="settings">Settings</string>
+    <string name="help_support">Help &amp; Support</string>
+    <string name="about_us">About Us</string>
+    <string name="terms_conditions">Terms &amp; Conditions</string>
+    <string name="privacy_policy">Privacy Policy</string>
+
+    <!-- Address -->
+    <string name="addresses">Addresses</string>
+    <string name="address_line">Address Line</string>
+    <string name="city">City</string>
+    <string name="district">District</string>
+    <string name="ward">Ward</string>
+    <string name="recipient_name">Recipient Name</string>
+    <string name="recipient_phone">Recipient Phone</string>
+    <string name="use_current_location">Use Current Location</string>
+    <string name="no_addresses_found">No addresses found</string>
+    <string name="default_address">Default Address</string>
+
+    <!-- Error messages -->
+    <string name="error_server">Server error. Please try again later.</string>
+    <string name="error_login_failed">Login failed. Please check your credentials.</string>
+    <string name="error_registration_failed">Registration failed. Please try again.</string>
+    <string name="error_empty_fields">Please fill in all required fields.</string>
+    <string name="error_empty_cart">Cannot checkout with an empty cart.</string>
+    <string name="error_minimum_order">Minimum order amount not met.</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+
+    <!--    Title   -->
+    <string name="title_toolbar_category">Tất cả danh mục</string>
+
+
+    <!-- Restaurant Detail Screen -->
+    <string name="vendor_cover_image">Ảnh bìa nhà hàng</string>
+    <string name="vendor_logo">Logo nhà hàng</string>
+    <string name="open_now">Đang mở cửa</string>
+    <string name="closed_now">Đã đóng cửa</string>
+    <string name="menu_categories">Danh mục thực đơn</string>
+    <string name="about_restaurant">Về nhà hàng</string>
+    <string name="popular">Phổ biến</string>
+    <string name="featured">Nổi bật</string>
+    <string name="featured_dishes">Món ăn nổi bật</string>
+
+    <!-- Food Item -->
+    <string name="price_format">%s đ</string>
+    <string name="distance_format">%s km</string>
+    <string name="opening_hours_format">%s - %s</string>
+    <string name="rating_format">%s (%d+)</string>
+
+    <!-- Restaurant Status -->
+    <string name="status_open">Mở cửa</string>
+    <string name="status_closed">Đóng cửa</string>
+    <string name="status_busy">Bận</string>
+    <string name="status_opening_soon">Sắp mở cửa</string>
+
+</resources>

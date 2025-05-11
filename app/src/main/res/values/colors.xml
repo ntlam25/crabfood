@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#FF5722</color>
+    <color name="colorPrimaryDark">#E64A19</color>
+    <color name="colorAccent">#FF9800</color>
+    <color name="colorError">#F44336</color>
+    <color name="colorSuccess">#4CAF50</color>
+    <color name="colorInfo">#2196F3</color>
+    <color name="colorWarning">#FFC107</color>
+    <color name="orderPending">#FFC107</color>
+
+    <color name="white">#FFFFFF</color>
+    <color name="black">#000000</color>
+    <color name="gray">#757575</color>
+    <color name="lightGray">#EEEEEE</color>
+    <color name="darkGray">#424242</color>
+
+    <color name="textPrimary">#212121</color>
+    <color name="textSecondary">#757575</color>
+    <color name="textHint">#9E9E9E</color>
+
+    <color name="backgroundColor">#FAFAFA</color>
+    <color name="cardBackground">#FFFFFF</color>
+    <color name="statusBarColor">@color/colorPrimaryDark</color>
+    <color name="rippleColor">#1F000000</color>
+
+    <color name="dividerColor">#E0E0E0</color>
+    <color name="shadowColor">#20000000</color>
+    <!--    custom color-->
+    <color name="primary_50">#FFEFED</color>
+    <color name="primary_100">#FFCFC6</color>
+    <color name="primary_200">#FFB7AA</color>
+    <color name="primary_300">#FF9684</color>
+    <color name="primary_400">#FF826C</color>
+    <color name="primary_500">#FF6347</color>
+    <color name="primary_600">#E85A41</color>
+    <color name="primary_700">#B54632</color>
+    <color name="primary_800">#8c3627</color>
+    <color name="primary_900">#6b2a1e</color>
+
+    <!-- Text Colors -->
+    <color name="text_primary">#212121</color>
+    <color name="text_secondary">#757575</color>
+    <color name="text_tertiary">#9E9E9E</color>
+    <color name="text_disabled">#BDBDBD</color>
+    <color name="text_on_primary">#FFFFFF</color>
+
+    <!-- Status Colors -->
+    <color name="red_500">#F44336</color>
+    <color name="red_700">#D32F2F</color>
+    <color name="yellow_500">#FFC107</color>
+    <color name="orange_500">#FF9800</color>
+
+    <!-- Neutrals -->
+    <color name="grey_50">#FAFAFA</color>
+    <color name="grey_100">#F5F5F5</color>
+    <color name="grey_200">#EEEEEE</color>
+    <color name="grey_300">#E0E0E0</color>
+    <color name="grey_400">#BDBDBD</color>
+    <color name="grey_500">#9E9E9E</color>
+    <color name="grey_600">#757575</color>
+    <color name="grey_700">#616161</color>
+    <color name="grey_800">#424242</color>
+    <color name="grey_900">#212121</color>
+
+    <!-- Background Colors -->
+    <color name="background_light">#FAFAFA</color>
+    <color name="background_card">#FFFFFF</color>
+    <color name="background_primary">#3288FF</color>
+    <color name="background_disabled">#F5F5F5</color>
+
+    <!-- Divider & Stroke -->
+    <color name="divider">#E0E0E0</color>
+    <color name="stroke_light">#E0E0E0</color>
+    <color name="stroke_dark">#BDBDBD</color>
+
+    <!-- Shadow -->
+    <color name="shadow">#40000000</color>
+
+    <!-- Transparent -->
+    <color name="transparent">#00000000</color>
+    <color name="semi_transparent">#80000000</color>
+
+    <color name="secondary_50">#fff9e6</color>
+    <color name="secondary_100">#ffeeb0</color>
+    <color name="secondary_200">#ffe58a</color>
+    <color name="secondary_300">#ffd954</color>
+    <color name="secondary_400">#ffd233</color>
+    <color name="secondary_500">#ffc700</color>
+    <color name="secondary_600">#e8b500</color>
+    <color name="secondary_700">#b58d00</color>
+    <color name="secondary_800">#8c6d00</color>
+    <color name="secondary_900">#6b5400</color>
+
+    <color name="neutral_50">#e9eaeb</color>
+    <color name="neutral_100">#babdc1</color>
+    <color name="neutral_200">#989da3</color>
+    <color name="neutral_300">#697079</color>
+    <color name="neutral_400">#4c555f</color>
+    <color name="neutral_500">#1f2a37</color>
+    <color name="neutral_600">#1c2632</color>
+    <color name="neutral_700">#161e27</color>
+    <color name="neutral_800">#11171e</color>
+    <color name="neutral_900">#0d1217</color>
+
+    <color name="green_50">#e7f9f5</color>
+    <color name="green_100">#b6ecde</color>
+    <color name="green_200">#92e3cf</color>
+    <color name="green_300">#61d6b9</color>
+    <color name="green_400">#42ceab</color>
+    <color name="green_500">#13c296</color>
+    <color name="green_600">#11b189</color>
+    <color name="green_700">#0d8a6b</color>
+    <color name="green_800">#0a6b53</color>
+    <color name="green_900">#08513f</color>
+
+    <color name="coral">#ff7a61</color>
+</resources>
