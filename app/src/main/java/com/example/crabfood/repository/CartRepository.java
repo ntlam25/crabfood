@@ -11,7 +11,6 @@ import androidx.lifecycle.LiveData;
 
 import com.example.crabfood.database.AppDatabase;
 import com.example.crabfood.database.CartDao;
-import com.example.crabfood.model.CartItem;
 import com.example.crabfood.model.CartItemEntity;
 import com.example.crabfood.model.CartSyncRequest;
 import com.example.crabfood.model.FoodResponse;
@@ -20,10 +19,13 @@ import com.example.crabfood.retrofit.ApiUtils;
 import com.example.crabfood.service.CartService;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.stream.Collectors;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -83,7 +85,7 @@ public class CartRepository {
                     // Check if options are the same
                     if (areOptionsEqual(item.getSelectedOptions(), selectedOptions)) {
                         // Update quantity
-                        cartDao.updateItemQuantity(item.getId(),item.getQuantity() + quantity);
+                        cartDao.updateItemQuantity(item.getId(), item.getQuantity() + quantity);
                         itemExists = true;
                         break;
                     }
@@ -108,11 +110,26 @@ public class CartRepository {
         return true;
     }
 
+    public Long getCurrentVendorId(){
+        if (vendorId == null) {
+            vendorId = cartDao.getCurrentVendorIdSync(); // fallback từ database
+        }
+        return vendorId;
+    }
+
+    public static List<OptionChoiceResponse> flattenOptionChoices(Map<Long, List<OptionChoiceResponse>> map) {
+        if (map == null) return Collections.emptyList();
+
+        return map.values()
+                .stream()
+                .flatMap(List::stream)
+                .collect(Collectors.toList());
+    }
+
     public void removeItem(long itemId) {
         executorService.execute(() -> {
             cartDao.deleteCartItemById(itemId);
             vendorId = null;
-            syncWithBackend();
         });
     }
 
@@ -123,7 +140,6 @@ public class CartRepository {
             } else {
                 cartDao.updateItemQuantity(itemId, quantity);
             }
-            syncWithBackend();
         });
     }
 
@@ -147,88 +163,6 @@ public class CartRepository {
                     Log.e(TAG, "Error clearing cart on backend", t);
                 }
             });
-        });
-    }
-
-    // Backend synchronization
-    public void syncWithBackend() {
-        executorService.execute(() -> {
-            List<CartItemEntity> unsyncedItems = cartDao.getUnsyncedCartItems();
-            if (unsyncedItems.isEmpty()) {
-                return;
-            }
-
-            // Convert entities to sync request
-            List<CartSyncRequest.CartItemRequest> itemRequests = new ArrayList<>();
-            for (CartItemEntity entity : unsyncedItems) {
-                CartSyncRequest.CartItemRequest request = new CartSyncRequest.CartItemRequest(
-                        entity.getId(),
-                        entity.getFoodId(),
-                        entity.getQuantity(),
-                        entity.getSelectedOptions()
-                );
-                itemRequests.add(request);
-            }
-
-            CartSyncRequest syncRequest = new CartSyncRequest(itemRequests);
-            apiService.syncCart(syncRequest).enqueue(new Callback<Void>() {
-                @Override
-                public void onResponse(Call<Void> call, Response<Void> response) {
-                    if (response.isSuccessful()) {
-                        executorService.execute(() -> {
-                            // Mark items as synced
-                            for (CartItemEntity entity : unsyncedItems) {
-                                cartDao.markItemAsSynced(entity.getId());
-                            }
-                            Log.d(TAG, "Cart synced with backend successfully");
-                        });
-                    } else {
-                        Log.e(TAG, "Failed to sync cart with backend: " + response.code());
-                    }
-                }
-
-                @Override
-                public void onFailure(Call<Void> call, Throwable t) {
-                    Log.e(TAG, "Error syncing cart with backend", t);
-                }
-            });
-        });
-    }
-
-    // Fetch cart from backend and update local database
-    public void fetchCartFromBackend() {
-        apiService.getCart().enqueue(new Callback<List<CartItem>>() {
-            @Override
-            public void onResponse(Call<List<CartItem>> call, Response<List<CartItem>> response) {
-                if (response.isSuccessful() && response.body() != null && response.body() != null) {
-                    List<CartItem> serverItems = response.body();
-                    executorService.execute(() -> {
-                        // Clear existing cart and replace with server data
-                        cartDao.clearCart();
-                        for (CartItem item : serverItems) {
-                            CartItemEntity entity = new CartItemEntity(
-                                    item.getFoodId(),
-                                    item.getFoodName(),
-                                    item.getImageUrl(),
-                                    item.getPrice(),
-                                    item.getQuantity(),
-                                    item.getVendorId(),
-                                    item.getSelectedOptions()
-                            );
-                            entity.setSynced(true);
-                            cartDao.insertCartItem(entity);
-                        }
-                        Log.d(TAG, "Cart updated from backend");
-                    });
-                } else {
-                    Log.e(TAG, "Failed to get cart from backend");
-                }
-            }
-
-            @Override
-            public void onFailure(Call<List<CartItem>> call, Throwable t) {
-                Log.e(TAG, "Error getting cart from backend", t);
-            }
         });
     }
 }
