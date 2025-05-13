@@ -10,7 +10,7 @@ import androidx.room.TypeConverters;
 import com.example.crabfood.helpers.OptionChoiceConverters;
 import com.example.crabfood.model.CartItemEntity;
 
-@Database(entities = {CartItemEntity.class}, version = 1, exportSchema = false)
+@Database(entities = {CartItemEntity.class}, version = 2, exportSchema = false)
 @TypeConverters({OptionChoiceConverters.class})
 public abstract class AppDatabase extends RoomDatabase {
     private static final String DATABASE_NAME = "crabfood_db";

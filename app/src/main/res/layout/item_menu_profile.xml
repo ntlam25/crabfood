@@ -8,12 +8,14 @@
     android:background="?attr/selectableItemBackground">
 
     <ImageView
+        android:id="@+id/icon"
         android:layout_width="24dp"
         android:layout_height="24dp"
         android:src="@drawable/map_point"
         android:layout_marginEnd="16dp" />
 
     <TextView
+        android:id="@+id/title"
         android:layout_width="0dp"
         android:layout_weight="1"
         android:layout_height="wrap_content"

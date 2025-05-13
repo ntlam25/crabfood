@@ -6,6 +6,7 @@ import androidx.room.TypeConverters;
 
 import com.example.crabfood.helpers.OptionChoiceConverters;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -22,7 +23,7 @@ public class CartItemEntity {
     private Long vendorId;
     private Map<Long, List<OptionChoiceResponse>> selectedOptions;
     private boolean isSynced;
-    private long lastUpdated;
+    private Date lastUpdated;
 
     public CartItemEntity() {
     }
@@ -38,7 +39,7 @@ public class CartItemEntity {
         this.vendorId = vendorId;
         this.selectedOptions = selectedOptions;
         this.isSynced = false;
-        this.lastUpdated = System.currentTimeMillis();
+        this.lastUpdated = new Date();
     }
 
     // Getters and setters
@@ -114,11 +115,11 @@ public class CartItemEntity {
         isSynced = synced;
     }
 
-    public long getLastUpdated() {
+    public Date getLastUpdated() {
         return lastUpdated;
     }
 
-    public void setLastUpdated(long lastUpdated) {
+    public void setLastUpdated(Date lastUpdated) {
         this.lastUpdated = lastUpdated;
     }
 

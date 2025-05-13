@@ -16,7 +16,7 @@ public class User implements Serializable {
     private boolean phoneVerified;
     private boolean isActive;
     private Date lastLogin;
-    private List<Address> addresses = new ArrayList<>();
+    private List<AddressResponse> addresses = new ArrayList<>();
     private List<String> roles = new ArrayList<>();
     private String token;
     
@@ -105,11 +105,11 @@ public class User implements Serializable {
         this.lastLogin = lastLogin;
     }
     
-    public List<Address> getAddresses() {
+    public List<AddressResponse> getAddresses() {
         return addresses;
     }
     
-    public void setAddresses(List<Address> addresses) {
+    public void setAddresses(List<AddressResponse> addresses) {
         this.addresses = addresses;
     }
     
@@ -130,9 +130,9 @@ public class User implements Serializable {
     }
     
     // Helper methods
-    public Address getDefaultAddress() {
+    public AddressResponse getDefaultAddress() {
         if (addresses != null && !addresses.isEmpty()) {
-            for (Address address : addresses) {
+            for (AddressResponse address : addresses) {
                 if (address.isDefault()) {
                     return address;
                 }

@@ -13,16 +13,22 @@ import com.example.crabfood.model.AuthResponse;
 import com.example.crabfood.model.SignupRequest;
 import com.example.crabfood.model.UserResponse;
 import com.example.crabfood.repository.AuthRepository;
+import com.example.crabfood.repository.UserRepository;
+import com.example.crabfood.retrofit.ApiUtils;
+import com.example.crabfood.service.UserService;
 
 public class AuthViewModel extends AndroidViewModel {
     private final AuthRepository authRepository;
     private final SessionManager sessionManager;
+
+    private final UserRepository userRepository;
     private final MediatorLiveData<Resource<Boolean>> authenticationState = new MediatorLiveData<>();
 
     public AuthViewModel(@NonNull Application application) {
         super(application);
         authRepository = new AuthRepository();
         sessionManager = new SessionManager(application);
+        userRepository = new UserRepository();
 
         // Kiểm tra trạng thái đăng nhập khi khởi tạo
         if (sessionManager.isLoggedIn()) {
@@ -65,6 +71,10 @@ public class AuthViewModel extends AndroidViewModel {
     public void logout() {
         sessionManager.logout();
         authenticationState.setValue(Resource.success(false));
+    }
+
+    public LiveData<UserResponse> getCurrentUser(){
+        return userRepository.getUserById(sessionManager.getUserId());
     }
 
     public boolean isLoggedIn() {

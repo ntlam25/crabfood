@@ -2,6 +2,7 @@ package com.example.crabfood.ui.cart;
 
 import android.app.AlertDialog;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,6 +17,9 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import com.example.crabfood.R;
 import com.example.crabfood.adapter.CartAdapter;
 import com.example.crabfood.databinding.FragmentCartBinding;
+import com.example.crabfood.model.CartItemEntity;
+
+import java.util.List;
 
 public class CartFragment extends Fragment implements CartAdapter.CartItemListener {
 
@@ -74,8 +78,7 @@ public class CartFragment extends Fragment implements CartAdapter.CartItemListen
     private void setupCheckoutButton() {
         binding.buttonCheckout.setOnClickListener(v -> {
             // Ensure cart is synced before proceeding to checkout
-            viewModel.syncWithBackend();
-//            Navigation.findNavController(requireView()).navigate(R.id.action_cartFragment_to_checkoutFragment);
+            Navigation.findNavController(requireView()).navigate(R.id.action_cartFragment_to_checkoutFragment);
         });
     }
 

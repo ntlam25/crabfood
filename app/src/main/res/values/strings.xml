@@ -85,7 +85,7 @@
     <string name="delivery_fee">Phí giao hàng</string>
     <string name="tax">Thuế</string>
     <string name="total">Tổng cộng</string>
-    <string name="checkout">Thanh toán</string>
+    <string name="checkout">Xác nhận đơn hàng</string>
     <string name="from_restaurant">Từ %1$s</string>
     <string name="remove_item">Xoá</string>
     <string name="clear_cart">Xoá giỏ hàng</string>
@@ -239,7 +239,8 @@
 
     <!-- Checkout -->
     <string name="delivery_instructions">Delivery Instructions</string>
-    <string name="add_new_address">Add New Address</string>
+    <string name="add_new_address">Thêm địa chỉ mới</string>
+    <string name="apply_address">Áp dụng</string>
 
     <!-- Order tracking -->
     <string name="preparing">Đang chuẩn bị</string>

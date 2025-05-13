@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-public class Order implements Serializable {
+public class OrderResponse implements Serializable {
     private Long id;
     private String orderNumber;
     private Long customerId;
@@ -36,7 +36,7 @@ public class Order implements Serializable {
     private List<OrderFood> orderFoods = new ArrayList<>();
     
     // Constructors
-    public Order() {
+    public OrderResponse() {
         this.discountAmount = 0.0;
         this.paymentStatus = OrderPaymentStatus.PENDING;
         this.orderStatus = OrderStatus.PENDING;

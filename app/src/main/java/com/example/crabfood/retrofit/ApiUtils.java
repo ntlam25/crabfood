@@ -1,9 +1,12 @@
 package com.example.crabfood.retrofit;
 
+import com.example.crabfood.service.AddressService;
 import com.example.crabfood.service.AuthService;
 import com.example.crabfood.service.CartService;
 import com.example.crabfood.service.CategoryService;
 import com.example.crabfood.service.FoodService;
+import com.example.crabfood.service.OrderService;
+import com.example.crabfood.service.UserService;
 import com.example.crabfood.service.VendorService;
 
 public class ApiUtils {
@@ -30,5 +33,20 @@ public class ApiUtils {
     public static AuthService getAuthService()
     {
         return RetrofitClient.getClient(BASE_URL).create(AuthService.class);
+    }
+
+    public static AddressService getAddressService()
+    {
+        return RetrofitClient.getClient(BASE_URL).create(AddressService.class);
+    }
+
+    public static UserService getUserService()
+    {
+        return RetrofitClient.getClient(BASE_URL).create(UserService.class);
+    }
+
+    public static OrderService getOrderService()
+    {
+        return RetrofitClient.getClient(BASE_URL).create(OrderService.class);
     }
 }

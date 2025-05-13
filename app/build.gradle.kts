@@ -1,5 +1,6 @@
 plugins {
     id("com.android.application")
+    id("dagger.hilt.android.plugin")
 }
 
 android {
@@ -103,4 +104,13 @@ dependencies {
     implementation ("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3")
     implementation ("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3")
 
+    // rxjava3
+    implementation ("io.reactivex.rxjava3:rxjava:3.1.8")
+    runtimeOnly ("com.google.dagger:hilt-android:2.49")
+    // RxAndroid 3 (chứa AndroidSchedulers)
+    implementation("io.reactivex.rxjava3:rxandroid:3.0.2")
+
+    // hilt
+    implementation("com.google.dagger:hilt-android:2.48")
+    annotationProcessor("com.google.dagger:hilt-android-compiler:2.48")
 }

@@ -7,12 +7,8 @@ import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MediatorLiveData;
-import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.Transformations;
-import androidx.lifecycle.ViewModel;
 
-import com.example.crabfood.model.Cart;
-import com.example.crabfood.model.CartItem;
 import com.example.crabfood.model.CartItemEntity;
 import com.example.crabfood.model.FoodResponse;
 import com.example.crabfood.model.OptionChoiceResponse;
@@ -25,6 +21,7 @@ public class CartViewModel extends AndroidViewModel {
     private final CartRepository cartRepository;
     private final LiveData<List<CartItemEntity>> cartItems;
     private final MediatorLiveData<Double> totalPrice = new MediatorLiveData<>();
+    private final MediatorLiveData<Long> currentVendorId = new MediatorLiveData<>();
     private final LiveData<Boolean> isCartEmpty;
 
     public CartViewModel(@NonNull Application application) {
@@ -45,8 +42,16 @@ public class CartViewModel extends AndroidViewModel {
             totalPrice.setValue(total);
         });
 
+        currentVendorId.addSource(cartItems, items -> {
+            if (items != null && !items.isEmpty()) {
+                currentVendorId.setValue(items.get(0).getVendorId());
+            } else {
+                currentVendorId.setValue(null);
+            }
+        });
+
         // Initial fetch from backend
-        refreshCartData();
+//        refreshCartData();
     }
 
     public LiveData<List<CartItemEntity>> getCartItems() {
@@ -61,13 +66,16 @@ public class CartViewModel extends AndroidViewModel {
         return isCartEmpty;
     }
 
+    public LiveData<Long> getCurrentVendorIdLive() {
+        return currentVendorId;
+    }
 
     public boolean addToCart(Context context, FoodResponse food, int quantity, Map<Long, List<OptionChoiceResponse>> selectedOptions) {
         return cartRepository.addToCart(context, food, quantity, selectedOptions);
     }
 
     public void refreshCartData() {
-//        cartRepository.fetchCartFromBackend();
+        cartRepository.getAllCartItems();
     }
 
     public void updateItemQuantity(long itemId, int quantity) {
@@ -82,7 +90,4 @@ public class CartViewModel extends AndroidViewModel {
         cartRepository.clearCart();
     }
 
-    public void syncWithBackend() {
-        cartRepository.syncWithBackend();
-    }
 }

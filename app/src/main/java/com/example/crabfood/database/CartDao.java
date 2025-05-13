@@ -36,13 +36,16 @@ public interface CartDao {
     List<CartItemEntity> getAllCartItemsSync();
 
     @Query("SELECT * FROM cart_items WHERE isSynced = 0")
-    List<CartItemEntity> getUnsyncedCartItems();
+    List<CartItemEntity> getUnSyncedCartItems();
 
     @Query("UPDATE cart_items SET isSynced = 1 WHERE id = :id")
     void markItemAsSynced(long id);
 
     @Query("SELECT COUNT(*) FROM cart_items")
     LiveData<Integer> getCartItemCount();
+
+    @Query("SELECT COUNT(*) FROM cart_items")
+    Integer getCartItemCountSync();
 
     @Query("SELECT SUM(quantity) FROM cart_items")
     LiveData<Integer> getTotalItemQuantity();
@@ -52,5 +55,8 @@ public interface CartDao {
 
     @Query("UPDATE cart_items SET quantity = :quantity, isSynced = 0 WHERE id = :id")
     void updateItemQuantity(long id, int quantity);
+
+    @Query("SELECT vendorId FROM cart_items LIMIT 1")
+    Long getCurrentVendorIdSync();
 }
 

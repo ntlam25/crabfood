@@ -1,17 +1,9 @@
 package com.example.crabfood.ui.auth;
 
-import androidx.appcompat.app.AppCompatActivity;
-
-import android.os.Bundle;
-
-import com.example.crabfood.MainActivity;
-import com.example.crabfood.R;
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -19,6 +11,7 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
 
+import com.example.crabfood.MainActivity;
 import com.example.crabfood.R;
 import com.example.crabfood.helpers.Resource;
 import com.google.android.material.textfield.TextInputEditText;

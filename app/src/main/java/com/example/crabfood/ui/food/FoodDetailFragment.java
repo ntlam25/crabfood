@@ -1,6 +1,5 @@
 package com.example.crabfood.ui.food;
 
-import android.app.AlertDialog;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
@@ -23,11 +22,9 @@ import androidx.navigation.Navigation;
 import com.bumptech.glide.Glide;
 import com.example.crabfood.R;
 import com.example.crabfood.databinding.FragmentFoodDetailBinding;
-import com.example.crabfood.helpers.CartManager;
 import com.example.crabfood.model.FoodOptionResponse;
 import com.example.crabfood.model.FoodResponse;
 import com.example.crabfood.model.OptionChoiceResponse;
-import com.example.crabfood.model.VendorResponse;
 import com.example.crabfood.ui.cart.CartViewModel;
 
 import java.util.ArrayList;
@@ -40,7 +37,6 @@ public class FoodDetailFragment extends Fragment {
     private FragmentFoodDetailBinding binding;
     private FoodDetailViewModel viewModel;
 
-    private CartManager cartManager;
     private CartViewModel cartViewModel;
     private Long foodId;
     private FoodResponse food;
@@ -60,7 +56,6 @@ public class FoodDetailFragment extends Fragment {
 
         viewModel = new ViewModelProvider(this).get(FoodDetailViewModel.class);
         cartViewModel = new ViewModelProvider(this).get(CartViewModel.class);
-//        cartManager = CartManager.getInstance(requireContext());
 
         if (getArguments() != null) {
             foodId = getArguments().getLong("foodId", 0);
@@ -185,21 +180,6 @@ public class FoodDetailFragment extends Fragment {
         binding.buttonAddToCart.setOnClickListener(v -> {
             addToCart();
         });
-    }
-
-    private void showVendorConflictDialog() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
-        builder.setTitle("Giỏ hàng hiện tại");
-        builder.setMessage("Giỏ hàng của bạn đang có món từ nhà hàng khác." +
-                " Bạn có muốn xóa giỏ hàng hiện tại không?");
-
-        builder.setPositiveButton("Đồng ý", (dialog, which) -> {
-            cartManager.clearCart();
-            // Có thể chuyển đến món đã chọn sau khi xóa giỏ hàng
-        });
-
-        builder.setNegativeButton("Hủy", null);
-        builder.show();
     }
 
     private void addToCart() {

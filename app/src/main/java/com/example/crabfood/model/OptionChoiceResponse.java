@@ -3,8 +3,10 @@ package com.example.crabfood.model;
 public class OptionChoiceResponse {
     private Long id;
     private String name;
+    private String optionName;
     private double priceAdjustment;
     private boolean isDefault;
+    private Long optionId;
 
     public OptionChoiceResponse() {
     }
@@ -39,6 +41,22 @@ public class OptionChoiceResponse {
 
     public void setDefault(boolean aDefault) {
         isDefault = aDefault;
+    }
+
+    public String getOptionName() {
+        return optionName;
+    }
+
+    public void setOptionName(String optionName) {
+        this.optionName = optionName;
+    }
+
+    public Long getOptionId() {
+        return optionId;
+    }
+
+    public void setOptionId(Long optionId) {
+        this.optionId = optionId;
     }
 
     @Override
