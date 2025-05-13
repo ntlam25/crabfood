@@ -16,7 +16,7 @@ public class OptionChoiceConverters {
     private static final Gson gson = new Gson();
 
     @TypeConverter
-    public static String fromOptionsMap(Map<Long, List<OptionChoiceResponse>> options) {
+    public static String fromOptionsMap(List<OptionChoiceResponse> options) {
         if (options == null) {
             return null;
         }
@@ -24,11 +24,11 @@ public class OptionChoiceConverters {
     }
 
     @TypeConverter
-    public static Map<Long, List<OptionChoiceResponse>> toOptionsMap(String optionsString) {
+    public static List<OptionChoiceResponse> toOptionsMap(String optionsString) {
         if (optionsString == null) {
             return null;
         }
-        Type type = new TypeToken<HashMap<Long, List<OptionChoiceResponse>>>() {}.getType();
+        Type type = new TypeToken<List<OptionChoiceResponse>>() {}.getType();
         return gson.fromJson(optionsString, type);
     }
 

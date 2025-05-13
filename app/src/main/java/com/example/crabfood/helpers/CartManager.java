@@ -18,6 +18,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import retrofit2.Call;
@@ -40,7 +41,7 @@ public class CartManager {
         return instance;
     }
 
-    public boolean addToCart(Context context,FoodResponse food, int quantity, Map<Long, List<OptionChoiceResponse>> selectedOptions) {
+    public boolean addToCart(Context context,FoodResponse food, int quantity, List<OptionChoiceResponse> selectedOptions) {
         if (vendorId != null && vendorId != food.getVendorId()) {
             Toast.makeText(context, "Không thể thêm món ăn từ nhà hàng khác", Toast.LENGTH_SHORT).show();
             return false;
@@ -79,62 +80,40 @@ public class CartManager {
     }
 
     // Helper method to compare two option maps
-    public static boolean areOptionsEqual(Map<Long, List<OptionChoiceResponse>> options1, Map<Long, List<OptionChoiceResponse>> options2) {
+    public static boolean areOptionsEqual(List<OptionChoiceResponse> options1, List<OptionChoiceResponse> options2) {
         if (options1 == null && options2 == null) return true;
         if (options1 == null || options2 == null) return false;
         if (options1.size() != options2.size()) return false;
 
-        for (Map.Entry<Long, List<OptionChoiceResponse>> entry : options1.entrySet()) {
-            Long optionId = entry.getKey();
-            List<OptionChoiceResponse> choices1 = entry.getValue();
 
-            if (!options2.containsKey(optionId)) return false;
+        Set<Long> ids1 = options1.stream()
+                .map(OptionChoiceResponse::getId)
+                .collect(Collectors.toSet());
 
-            List<OptionChoiceResponse> choices2 = options2.get(optionId);
-            if (choices1.size() != choices2.size()) return false;
+        Set<Long> ids2 = options2.stream()
+                .map(OptionChoiceResponse::getId)
+                .collect(Collectors.toSet());
 
-            // Compare each choice by ID
-            for (OptionChoiceResponse choice : choices1) {
-                boolean found = false;
-                for (OptionChoiceResponse otherChoice : choices2) {
-                    if (choice.getId().equals(otherChoice.getId())) {
-                        found = true;
-                        break;
-                    }
-                }
-                if (!found) return false;
-            }
-        }
-
-        return true;
+        return ids1.equals(ids2);
     }
 
     // Create a deep copy of the options map to avoid reference issues
-    public static Map<Long, List<OptionChoiceResponse>> deepCopyOptions(Map<Long, List<OptionChoiceResponse>> original) {
-        if (original == null) return null;
-
-        Map<Long, List<OptionChoiceResponse>> copy = new HashMap<>();
-        for (Map.Entry<Long, List<OptionChoiceResponse>> entry : original.entrySet()) {
-            List<OptionChoiceResponse> choicesCopy = new ArrayList<>();
-            for (OptionChoiceResponse choice : entry.getValue()) {
-                // Since Choice is serializable, we can use Gson for deep copy
-                Gson gson = new Gson();
-                choicesCopy.add(gson.fromJson(gson.toJson(choice), OptionChoiceResponse.class));
-            }
-            copy.put(entry.getKey(), choicesCopy);
-        }
-
-        return copy;
-    }
-
-    public static List<OptionChoiceResponse> flattenOptionChoices(Map<Long, List<OptionChoiceResponse>> map) {
-        if (map == null) return Collections.emptyList();
-
-        return map.values()
-                .stream()
-                .flatMap(List::stream)
-                .collect(Collectors.toList());
-    }
+//    public static List<OptionChoiceResponse> deepCopyOptions(List<OptionChoiceResponse> original) {
+//        if (original == null) return null;
+//
+//        List<OptionChoiceResponse> copy = new HashMap<>();
+//        for (Map.Entry<Long, List<OptionChoiceResponse>> entry : original.entrySet()) {
+//            List<OptionChoiceResponse> choicesCopy = new ArrayList<>();
+//            for (OptionChoiceResponse choice : entry.getValue()) {
+//                // Since Choice is serializable, we can use Gson for deep copy
+//                Gson gson = new Gson();
+//                choicesCopy.add(gson.fromJson(gson.toJson(choice), OptionChoiceResponse.class));
+//            }
+//            copy.put(entry.getKey(), choicesCopy);
+//        }
+//
+//        return copy;
+//    }
 
     public void updateQuantity(CartItemEntity cartItem, int newQuantity) {
         cartItem.setQuantity(newQuantity);

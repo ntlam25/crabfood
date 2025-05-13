@@ -1,7 +1,6 @@
 package com.example.crabfood.repository;
 
 import static com.example.crabfood.helpers.CartManager.areOptionsEqual;
-import static com.example.crabfood.helpers.CartManager.deepCopyOptions;
 
 import android.content.Context;
 import android.util.Log;
@@ -12,20 +11,15 @@ import androidx.lifecycle.LiveData;
 import com.example.crabfood.database.AppDatabase;
 import com.example.crabfood.database.CartDao;
 import com.example.crabfood.model.CartItemEntity;
-import com.example.crabfood.model.CartSyncRequest;
 import com.example.crabfood.model.FoodResponse;
 import com.example.crabfood.model.OptionChoiceResponse;
 import com.example.crabfood.retrofit.ApiUtils;
 import com.example.crabfood.service.CartService;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.stream.Collectors;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -67,7 +61,7 @@ public class CartRepository {
         return cartDao.getTotalItemQuantity();
     }
 
-    public boolean addToCart(Context context, FoodResponse food, int quantity, Map<Long, List<OptionChoiceResponse>> selectedOptions) {
+    public boolean addToCart(Context context, FoodResponse food, int quantity, List<OptionChoiceResponse> selectedOptions) {
         if (vendorId != null && vendorId != food.getVendorId()) {
             Toast.makeText(context, "Không thể thêm món ăn từ nhà hàng khác", Toast.LENGTH_SHORT).show();
             return false;
@@ -101,29 +95,13 @@ public class CartRepository {
                         food.getPrice(),
                         quantity,
                         vendorId,
-                        deepCopyOptions(selectedOptions)
+                        new ArrayList<>(selectedOptions)
                 );
                 cartDao.insertCartItem(newItem);
             }
         });
         Toast.makeText(context, "Đã thêm vào giỏ hàng", Toast.LENGTH_SHORT).show();
         return true;
-    }
-
-    public Long getCurrentVendorId(){
-        if (vendorId == null) {
-            vendorId = cartDao.getCurrentVendorIdSync(); // fallback từ database
-        }
-        return vendorId;
-    }
-
-    public static List<OptionChoiceResponse> flattenOptionChoices(Map<Long, List<OptionChoiceResponse>> map) {
-        if (map == null) return Collections.emptyList();
-
-        return map.values()
-                .stream()
-                .flatMap(List::stream)
-                .collect(Collectors.toList());
     }
 
     public void removeItem(long itemId) {

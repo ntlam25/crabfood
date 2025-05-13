@@ -70,7 +70,7 @@ public class CartViewModel extends AndroidViewModel {
         return currentVendorId;
     }
 
-    public boolean addToCart(Context context, FoodResponse food, int quantity, Map<Long, List<OptionChoiceResponse>> selectedOptions) {
+    public boolean addToCart(Context context, FoodResponse food, int quantity, List<OptionChoiceResponse> selectedOptions) {
         return cartRepository.addToCart(context, food, quantity, selectedOptions);
     }
 

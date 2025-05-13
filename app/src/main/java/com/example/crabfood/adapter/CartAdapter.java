@@ -92,16 +92,14 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.CartViewHolder
 
             // Setup options text
             StringBuilder optionsText = new StringBuilder();
-            Map<Long, List<OptionChoiceResponse>> options = item.getSelectedOptions();
+            List<OptionChoiceResponse> options = item.getSelectedOptions();
             if (options != null && !options.isEmpty()) {
-                for (Map.Entry<Long, List<OptionChoiceResponse>> entry : options.entrySet()) {
-                    for (OptionChoiceResponse choice : entry.getValue()) {
+                    for (OptionChoiceResponse choice : options) {
                         optionsText.append("• ").append(choice.getName());
                         if (choice.getPriceAdjustment() > 0) {
                             optionsText.append(" (+").append(String.format(Locale.getDefault(), "%,.0f đ", choice.getPriceAdjustment())).append(")");
                         }
                         optionsText.append("\n");
-                    }
                 }
                 binding.textViewOptions.setText(optionsText.toString().trim());
                 binding.textViewOptions.setVisibility(View.VISIBLE);

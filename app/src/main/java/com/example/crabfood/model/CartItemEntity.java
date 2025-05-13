@@ -21,7 +21,7 @@ public class CartItemEntity {
     private double price;
     private int quantity;
     private Long vendorId;
-    private Map<Long, List<OptionChoiceResponse>> selectedOptions;
+    private List<OptionChoiceResponse> selectedOptions;
     private boolean isSynced;
     private Date lastUpdated;
 
@@ -30,7 +30,7 @@ public class CartItemEntity {
 
     public CartItemEntity(Long foodId, String foodName, String imageUrl, double price,
                           int quantity, Long vendorId,
-                          Map<Long, List<OptionChoiceResponse>> selectedOptions) {
+                          List<OptionChoiceResponse> selectedOptions) {
         this.foodId = foodId;
         this.foodName = foodName;
         this.imageUrl = imageUrl;
@@ -99,11 +99,11 @@ public class CartItemEntity {
         this.vendorId = vendorId;
     }
 
-    public Map<Long, List<OptionChoiceResponse>> getSelectedOptions() {
+    public List<OptionChoiceResponse> getSelectedOptions() {
         return selectedOptions;
     }
 
-    public void setSelectedOptions(Map<Long, List<OptionChoiceResponse>> selectedOptions) {
+    public void setSelectedOptions(List<OptionChoiceResponse> selectedOptions) {
         this.selectedOptions = selectedOptions;
     }
 
@@ -129,10 +129,8 @@ public class CartItemEntity {
 
         // Add price adjustments from options
         if (selectedOptions != null) {
-            for (Map.Entry<Long, List<OptionChoiceResponse>> entry : selectedOptions.entrySet()) {
-                for (OptionChoiceResponse choice : entry.getValue()) {
-                    basePrice += choice.getPriceAdjustment();
-                }
+            for (OptionChoiceResponse choice : selectedOptions) {
+                basePrice += choice.getPriceAdjustment();
             }
         }
 

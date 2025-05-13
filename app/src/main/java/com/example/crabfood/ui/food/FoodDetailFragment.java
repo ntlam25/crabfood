@@ -26,14 +26,18 @@ import com.example.crabfood.model.FoodOptionResponse;
 import com.example.crabfood.model.FoodResponse;
 import com.example.crabfood.model.OptionChoiceResponse;
 import com.example.crabfood.ui.cart.CartViewModel;
+import com.google.android.material.snackbar.Snackbar;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public class FoodDetailFragment extends Fragment {
 
+    private final String TAG = "Food Detail";
     private FragmentFoodDetailBinding binding;
     private FoodDetailViewModel viewModel;
 
@@ -42,7 +46,8 @@ public class FoodDetailFragment extends Fragment {
     private FoodResponse food;
     private boolean isExpanded = false;
     // Store selected options for cart
-    private Map<Long, List<OptionChoiceResponse>> selectedChoices = new HashMap<>();
+    private List<OptionChoiceResponse> selectedChoices = new ArrayList<>();
+
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
@@ -152,10 +157,8 @@ public class FoodDetailFragment extends Fragment {
             double totalPrice = food.getPrice();
 
             // Add price adjustments from selected options
-            for (Map.Entry<Long, List<OptionChoiceResponse>> entry : selectedChoices.entrySet()) {
-                for (OptionChoiceResponse choice : entry.getValue()) {
-                    totalPrice += choice.getPriceAdjustment();
-                }
+            for (OptionChoiceResponse choice : selectedChoices) {
+                totalPrice += choice.getPriceAdjustment();
             }
 
             // Multiply by quantity
@@ -164,6 +167,7 @@ public class FoodDetailFragment extends Fragment {
             binding.buttonAddToCart.setText(getString(R.string.add_to_cart) + "\n" + String.format("%,.0f đ", totalPrice));
         }
     }
+
     private void setupQuantityButtons() {
         // Decrease quantity button
         binding.buttonDecrease.setOnClickListener(v -> {
@@ -190,14 +194,28 @@ public class FoodDetailFragment extends Fragment {
 
             if (food.getOptions() != null) {
                 for (FoodOptionResponse option : food.getOptions()) {
-                    if (option.isRequired() &&
-                            (selectedChoices.get(option.getOptionId()) == null ||
-                                    selectedChoices.get(option.getOptionId()).isEmpty())) {
+                    // Count selections for this option
+                    long optionId = option.getOptionId();
+                    int selectionCount = 0;
+
+                    // Count how many selections belong to this option
+                    for (OptionChoiceResponse selectedChoice : selectedChoices) {
+                        for (OptionChoiceResponse optionChoice : option.getChoices()) {
+                            if (selectedChoice.equals(optionChoice)) {
+                                selectionCount++;
+                                break;
+                            }
+                        }
+                    }
+
+                    // Check required options
+                    if (option.isRequired() && selectionCount == 0) {
                         allRequiredSelected = false;
                         missingOptions.append(option.getName()).append(", ");
-                    } else if (!option.isRequired() && option.getMinSelection() > 0) {
-                        // Check if minimum selections requirement is met
-                        if (selectedChoices.get(option.getOptionId()).size() < option.getMinSelection()) {
+                    }
+                    // Check minimum selections for optional options
+                    else if (!option.isRequired() && option.getMinSelection() > 0) {
+                        if (selectionCount < option.getMinSelection()) {
                             allRequiredSelected = false;
                             missingOptions.append(option.getName())
                                     .append(" (cần chọn ít nhất ")
@@ -220,10 +238,8 @@ public class FoodDetailFragment extends Fragment {
             }
 
             int quantity = viewModel.getQuantity().getValue();
-            Long vendorId = viewModel.getVendorId().getValue();
 
-            // Add to cart using CartHelper
-            // You'll need to modify your CartHelper to accept the selected options
+            // Note: Your CartViewModel will need to be updated to accept a List instead of a Map
             boolean success = cartViewModel.addToCart(requireContext(), food, quantity, selectedChoices);
 
             if (success) {
@@ -234,9 +250,13 @@ public class FoodDetailFragment extends Fragment {
             Toast.makeText(requireContext(), "Không thể thêm vào giỏ hàng!", Toast.LENGTH_SHORT).show();
         }
     }
+
     private void setupFoodOptions() {
         // Clear existing options
         binding.optionsContainer.removeAllViews();
+
+        // Clear and reinitialize the list for storing selected choices
+        selectedChoices.clear();
 
         // Hide options section if there are no options
         if (food.getOptions() == null || food.getOptions().isEmpty()) {
@@ -273,8 +293,8 @@ public class FoodDetailFragment extends Fragment {
             optionTitle.setTypeface(null, android.graphics.Typeface.BOLD);
             optionGroup.addView(optionTitle);
 
-            // Initialize list for storing selected choices for this option
-            selectedChoices.put(option.getOptionId(), new ArrayList<>());
+            final Long optionId = option.getOptionId();
+            Log.d("Food detail", "setupFoodOptions: option Id " + optionId);
 
             if (option.isRequired()) {
                 // Create radio group for required options (single selection)
@@ -283,6 +303,9 @@ public class FoodDetailFragment extends Fragment {
                         LinearLayout.LayoutParams.MATCH_PARENT,
                         LinearLayout.LayoutParams.WRAP_CONTENT));
                 radioGroup.setOrientation(LinearLayout.VERTICAL);
+
+                // Track whether this is a new selection
+                final boolean[] isFirstSelection = {true};
 
                 // Add radio buttons for each choice
                 boolean defaultFound = false;
@@ -301,19 +324,21 @@ public class FoodDetailFragment extends Fragment {
                         firstButton = radioButton;
                     }
 
+                    // Store the option ID and choice object as tags
+                    radioButton.setTag(R.id.tag_option_id, optionId);
+                    radioButton.setTag(R.id.tag_choice, choice);
+
                     // Check default choice
                     if (choice.isDefault()) {
                         radioButton.setChecked(true);
                         defaultFound = true;
 
                         // Add default choice to selected choices
-                        List<OptionChoiceResponse> choices = new ArrayList<>();
-                        choices.add(choice);
-                        selectedChoices.put(option.getOptionId(), choices);
+                        Log.d(TAG, "setupFoodOptions: " + option.getOptionId());
+                        choice.setOptionId(option.getOptionId());
+                        choice.setOptionName(option.getName());
+                        selectedChoices.add(choice);
                     }
-
-                    // Set tag for retrieving choice data later
-                    radioButton.setTag(choice);
 
                     radioGroup.addView(radioButton);
                 }
@@ -323,22 +348,43 @@ public class FoodDetailFragment extends Fragment {
                     firstButton.setChecked(true);
 
                     // Add first choice to selected choices
-                    OptionChoiceResponse firstChoice = (OptionChoiceResponse) firstButton.getTag();
-                    List<OptionChoiceResponse> choices = new ArrayList<>();
-                    choices.add(firstChoice);
-                    selectedChoices.put(option.getOptionId(), choices);
+                    OptionChoiceResponse firstChoice = (OptionChoiceResponse) firstButton.getTag(R.id.tag_choice);
+                    Log.d(TAG, "setupFoodOptions: " + option.getOptionId());
+                    firstChoice.setOptionId(option.getOptionId());
+                    firstChoice.setOptionName(option.getName());
+                    selectedChoices.add(firstChoice);
                 }
 
                 // Set listener for radio group
                 radioGroup.setOnCheckedChangeListener((group, checkedId) -> {
+                    // Skip the first automatic selection event
+                    if (isFirstSelection[0]) {
+                        isFirstSelection[0] = false;
+                        return;
+                    }
+
                     RadioButton selectedButton = group.findViewById(checkedId);
                     if (selectedButton != null) {
-                        OptionChoiceResponse selectedChoice = (OptionChoiceResponse) selectedButton.getTag();
+                        OptionChoiceResponse selectedChoice = (OptionChoiceResponse) selectedButton.getTag(R.id.tag_choice);
 
-                        // Update selected choices
-                        List<OptionChoiceResponse> choices = new ArrayList<>();
-                        choices.add(selectedChoice);
-                        selectedChoices.put(option.getOptionId(), choices);
+                        // Remove any previous selections for this option
+                        Iterator<OptionChoiceResponse> iterator = selectedChoices.iterator();
+                        while (iterator.hasNext()) {
+                            OptionChoiceResponse existingChoice = iterator.next();
+                            // Check if this choice belongs to the current option by comparing with choices list
+                            for (OptionChoiceResponse optionChoice : option.getChoices()) {
+                                if (existingChoice.equals(optionChoice)) {
+                                    iterator.remove();
+                                    break;
+                                }
+                            }
+                        }
+
+                        // Add the new selection
+                        Log.d(TAG, "setupFoodOptions: " + option.getOptionId());
+                        selectedChoice.setOptionId(option.getOptionId());
+                        selectedChoice.setOptionName(option.getName());
+                        selectedChoices.add(selectedChoice);
 
                         // Update total price
                         updateTotalPrice();
@@ -365,7 +411,7 @@ public class FoodDetailFragment extends Fragment {
                     checkboxGroup.addView(limitsInfo);
                 }
 
-                // Counter for default selections
+                // Counter for current selections in this option group
                 final int[] selectedCount = {0};
 
                 // Add checkbox for each choice
@@ -376,28 +422,41 @@ public class FoodDetailFragment extends Fragment {
                             LinearLayout.LayoutParams.MATCH_PARENT,
                             LinearLayout.LayoutParams.WRAP_CONTENT));
 
+                    // Store the option ID and choice object as tags
+                    checkBox.setTag(R.id.tag_option_id, optionId);
+                    checkBox.setTag(R.id.tag_choice, choice);
+
                     // Check default choice
                     if (choice.isDefault()) {
                         checkBox.setChecked(true);
                         selectedCount[0]++;
 
                         // Add default choice to selected choices
-                        selectedChoices.get(option.getOptionId()).add(choice);
+                        Log.d(TAG, "setupFoodOptions: " + option.getOptionId());
+                        choice.setOptionId(option.getOptionId());
+                        choice.setOptionName(option.getName());
+                        selectedChoices.add(choice);
                     }
 
-                    // Set tag for retrieving choice data later
-                    checkBox.setTag(choice);
-
                     // Checkbox listener
-                    final Long optionId = option.getOptionId();
                     final int maxSelection = option.getMaxSelection();
 
                     checkBox.setOnCheckedChangeListener((buttonView, isChecked) -> {
-                        OptionChoiceResponse selectedChoice = (OptionChoiceResponse) buttonView.getTag();
+                        OptionChoiceResponse selectedChoice = (OptionChoiceResponse) buttonView.getTag(R.id.tag_choice);
 
                         if (isChecked) {
-                            // Check if we've already selected the maximum number of choices
-                            if (selectedCount[0] >= maxSelection) {
+                            // Check if we've already selected the maximum number of choices for this option
+                            int currentSelectionCount = 0;
+                            for (OptionChoiceResponse existingChoice : selectedChoices) {
+                                for (OptionChoiceResponse optionChoice : option.getChoices()) {
+                                    if (existingChoice.equals(optionChoice)) {
+                                        currentSelectionCount++;
+                                        break;
+                                    }
+                                }
+                            }
+
+                            if (currentSelectionCount >= maxSelection) {
                                 // Uncheck this checkbox
                                 buttonView.setChecked(false);
                                 Toast.makeText(requireContext(),
@@ -407,10 +466,21 @@ public class FoodDetailFragment extends Fragment {
                             }
 
                             selectedCount[0]++;
-                            selectedChoices.get(optionId).add(selectedChoice);
+                            Log.d(TAG, "setupFoodOptions: " + option.getOptionId());
+                            selectedChoice.setOptionId(option.getOptionId());
+                            selectedChoice.setOptionName(option.getName());
+                            selectedChoices.add(selectedChoice);
                         } else {
                             selectedCount[0]--;
-                            selectedChoices.get(optionId).remove(selectedChoice);
+
+                            // Remove this choice
+                            Iterator<OptionChoiceResponse> iterator = selectedChoices.iterator();
+                            while (iterator.hasNext()) {
+                                if (iterator.next().equals(selectedChoice)) {
+                                    iterator.remove();
+                                    break;
+                                }
+                            }
                         }
 
                         // Update total price
@@ -436,6 +506,16 @@ public class FoodDetailFragment extends Fragment {
         }
 
         binding.optionsContainer.addView(optionsLayout);
+    }
+
+    // Helper method to find the option ID tag associated with a choice
+    private Long findTagForChoice(OptionChoiceResponse choice) {
+        for (FoodOptionResponse option : food.getOptions()) {
+            if (option.getChoices().contains(choice)) {
+                return option.getOptionId();
+            }
+        }
+        return null;
     }
 
     private String getChoiceText(OptionChoiceResponse choice) {
