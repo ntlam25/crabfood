@@ -177,7 +177,7 @@ public class VendorListFragment extends Fragment {
 
     private void updateVisibility() {
         if (tvNoResults != null) {
-            tvNoResults.setVisibility(filteredVendors.isEmpty() ? View.VISIBLE : View.GONE);
+            tvNoResults.setVisibility((filteredVendors.isEmpty()) ? View.VISIBLE : View.GONE);
         }
     }
 

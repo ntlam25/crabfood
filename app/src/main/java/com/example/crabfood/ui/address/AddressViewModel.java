@@ -8,11 +8,9 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import com.example.crabfood.helpers.Resource;
-import com.example.crabfood.helpers.SessionManager;
 import com.example.crabfood.model.AddressRequest;
 import com.example.crabfood.model.AddressResponse;
 import com.example.crabfood.repository.AddressRepository;
-import com.example.crabfood.repository.AuthRepository;
 
 import java.util.List;
 

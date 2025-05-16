@@ -1,5 +1,6 @@
 package com.example.crabfood.ui.vendor;
 
+import android.location.Location;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -16,15 +17,18 @@ import androidx.navigation.Navigation;
 import com.example.crabfood.R;
 import com.example.crabfood.databinding.FragmentAllVendorNearbyBinding;
 import com.example.crabfood.helpers.KeyboardHelper;
+import com.example.crabfood.helpers.LocationHelper;
+import com.google.android.material.snackbar.Snackbar;
 
 public class AllVendorNearbyFragment extends Fragment {
-
+    private static final String TAG = "All vendor nearby";
     private FragmentAllVendorNearbyBinding binding;
     private AllVendorNearbyViewModel viewModel;
     private VendorListFragment vendorListFragment;
     private double latitude;
     private double longitude;
     private double radius;
+    private Location location;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
@@ -39,11 +43,9 @@ public class AllVendorNearbyFragment extends Fragment {
         KeyboardHelper.hideKeyboardOnClickOutside(binding.getRoot(), requireActivity());
         // Initialize ViewModel
         viewModel = new ViewModelProvider(this).get(AllVendorNearbyViewModel.class);
-
+        getCurrentLocation();
         // Get location parameters from arguments
         if (getArguments() != null) {
-            latitude = getArguments().getFloat("latitude", 22F);
-            longitude = getArguments().getFloat("longitude", 100F);
             radius = getArguments().getFloat("radius", 5F);
         }
 
@@ -52,6 +54,38 @@ public class AllVendorNearbyFragment extends Fragment {
         setupSearchView();
         loadData();
         observe();
+    }
+
+    private void getCurrentLocation() {
+        LocationHelper.getCurrentLocation(requireActivity(), new LocationHelper.LocationCallbackInterface() {
+            @Override
+            public void onLocationResult(Location location) {
+                if (location != null) {
+                    AllVendorNearbyFragment.this.location = location;
+                    // Xử lý khi có vị trí
+                    String locationText = String.format(
+                            "Vị trí hiện tại:\n" +
+                                    "- Vĩ độ (Latitude): %.6f\n" +
+                                    "- Kinh độ (Longitude): %.6f\n" +
+                                    "- Độ chính xác: %.1f mét",
+                            location.getLatitude(),
+                            location.getLongitude(),
+                            location.getAccuracy()
+                    );
+                    viewModel.loadVendors(location.getLatitude(), location.getLongitude(), 5, null, null, null, null, null, null);
+                    Log.d(TAG, "Location updated: " + locationText);
+                } else {
+                    Snackbar.make(binding.getRoot(),"Không thể lấy được vị trí!",2000);
+                }
+            }
+
+            @Override
+            public void onLocationError(String error) {
+                // Xử lý khi có lỗi
+                Toast.makeText(requireContext(),
+                        "Lỗi lấy vị trí: " + error, Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     private void setupToolbar() {

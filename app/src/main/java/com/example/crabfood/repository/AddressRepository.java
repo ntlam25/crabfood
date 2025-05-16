@@ -72,4 +72,23 @@ public class AddressRepository {
 
         return result;
     }
+
+    public List<AddressResponse> getUserAddressesSync() {
+        service.getUserAddresses().enqueue(new Callback<List<AddressResponse>>() {
+            @Override
+            public void onResponse(Call<List<AddressResponse>> call, Response<List<AddressResponse>> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    result = response.body();
+                } else {
+                    result = new ArrayList<>();
+                }
+            }
+            @Override
+            public void onFailure(Call<List<AddressResponse>> call, Throwable t) {
+                result = null;
+            }
+        });
+
+        return result;
+    }
 }

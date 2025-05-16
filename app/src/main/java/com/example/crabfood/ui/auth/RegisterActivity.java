@@ -1,138 +1,242 @@
 package com.example.crabfood.ui.auth;
 
-import androidx.appcompat.app.AppCompatActivity;
-
+import android.content.Intent;
 import android.os.Bundle;
-
-import com.example.crabfood.R;
-
-import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.View;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.ProgressBar;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.example.crabfood.R;
-import com.google.android.material.textfield.TextInputEditText;
+import com.example.crabfood.databinding.ActivityRegisterBinding;
+import com.example.crabfood.helpers.KeyboardHelper;
+import com.example.crabfood.helpers.Resource;
+import com.google.android.material.snackbar.Snackbar;
 
 public class RegisterActivity extends AppCompatActivity {
 
-    private AuthViewModel authViewModel;
-    private TextInputEditText editTextEmail, editTextUsername, editTextPassword,
-            editTextConfirmPassowrd, editTextFullName, editTextPhone;
-    private Button buttonRegister,buttonLogin;
-    private ProgressBar progressBar;
+    private ActivityRegisterBinding binding;
+    private RegisterViewModel viewModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_register);
+        binding = ActivityRegisterBinding.inflate(getLayoutInflater());
+        setContentView(binding.getRoot());
 
-        // Khởi tạo ViewModel
-        authViewModel = new ViewModelProvider(this).get(AuthViewModel.class);
+        // Initialize ViewModel
+        viewModel = new ViewModelProvider(this).get(RegisterViewModel.class);
 
-        // Khởi tạo các view
-        editTextEmail = findViewById(R.id.et_email);
-        editTextUsername = findViewById(R.id.et_username);
-        editTextPassword = findViewById(R.id.et_password_register);
-        editTextConfirmPassowrd = findViewById(R.id.et_confirm_password);
-        editTextFullName = findViewById(R.id.et_full_name);
-        editTextPhone = findViewById(R.id.et_phone);
-        buttonRegister = findViewById(R.id.btn_register);
-        buttonLogin = findViewById(R.id.btn_login);
-        progressBar = findViewById(R.id.progress_bar);
-
-        // Thiết lập listener cho nút đăng ký
-        buttonRegister.setOnClickListener(v -> attemptRegister());
-
-        // Thiết lập listener cho nút đăng nhập
-        buttonLogin.setOnClickListener(v -> finish());
+        // Set up UI components
+        setupUI();
+        setupListeners();
+        observeViewModel();
     }
 
-    private void attemptRegister() {
-        String email = editTextEmail.getText().toString().trim();
-        String username = editTextUsername.getText().toString().trim();
-        String password = editTextPassword.getText().toString().trim();
-        String fullName = editTextFullName.getText().toString().trim();
-        String phone = editTextPhone.getText().toString().trim();
+    private void setupUI() {
+        // Set up UI initial state
+        binding.ivBack.setOnClickListener(v -> finish());
+    }
 
-        // Kiểm tra tính hợp lệ
-        if (email.isEmpty()) {
-            editTextEmail.setError("Please enter your email");
-            editTextEmail.requestFocus();
-            return;
-        }
+    private void setupListeners() {
+        // Full Name field
+        binding.etFullName.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
 
-        if (!android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
-            editTextEmail.setError("Please enter a valid email");
-            editTextEmail.requestFocus();
-            return;
-        }
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                viewModel.getFullName().setValue(s.toString());
+            }
 
-        if (username.isEmpty()) {
-            editTextUsername.setError("Please enter your username");
-            editTextUsername.requestFocus();
-            return;
-        }
+            @Override
+            public void afterTextChanged(Editable s) {
+            }
+        });
 
-        if (username.length() < 6) {
-            editTextUsername.setError("Username must be at least 6 characters");
-            editTextUsername.requestFocus();
-            return;
-        }
+        // Email field
+        binding.etEmail.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
 
-        if (password.isEmpty()) {
-            editTextPassword.setError("Please enter your password");
-            editTextPassword.requestFocus();
-            return;
-        }
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                viewModel.getEmail().setValue(s.toString());
+            }
 
-        if (password.length() < 6) {
-            editTextPassword.setError("Password must be at least 6 characters");
-            editTextPassword.requestFocus();
-            return;
-        }
+            @Override
+            public void afterTextChanged(Editable s) {
+            }
+        });
 
-        if (fullName.isEmpty()) {
-            editTextFullName.setError("Please enter your full name");
-            editTextFullName.requestFocus();
-            return;
-        }
+        // Username field
+        binding.etUsername.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
 
-        if (!phone.isEmpty() && !phone.matches("^0\\d{9,10}$")) {
-            editTextPhone.setError("Please enter a valid phone number");
-            editTextPhone.requestFocus();
-            return;
-        }
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                viewModel.getUsername().setValue(s.toString());
+            }
 
-        // Hiển thị progress bar
-        progressBar.setVisibility(View.VISIBLE);
+            @Override
+            public void afterTextChanged(Editable s) {}
+        });
 
-        // Thực hiện đăng ký
-        authViewModel.register(email, username, password, fullName, phone).observe(this, response -> {
-            progressBar.setVisibility(View.GONE);
+        // Phone field
+        binding.etPhone.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
 
-            switch (response.getStatus()) {
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                viewModel.getPhone().setValue(s.toString());
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {}
+        });
+
+        // Password field
+        binding.etPasswordRegister.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                viewModel.getPassword().setValue(s.toString());
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {}
+        });
+
+        // Confirm Password field
+        binding.etConfirmPassword.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                viewModel.getConfirmPassword().setValue(s.toString());
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {}
+        });
+
+        // Register button
+        binding.btnRegister.setOnClickListener(v -> {
+            // Hide keyboard
+            KeyboardHelper.hideKeyboard(this);
+
+            // Perform individual validations for better UX
+            boolean isFullNameValid = viewModel.validateFullName();
+            boolean isEmailValid = viewModel.validateEmail();
+            boolean isUsernameValid = viewModel.validateUsername();
+            boolean isPhoneValid = viewModel.validatePhone();
+            boolean isPasswordValid = viewModel.validatePassword();
+            boolean isConfirmPasswordValid = viewModel.validateConfirmPassword();
+
+            if (isFullNameValid && isEmailValid && isUsernameValid &&
+                    isPhoneValid && isPasswordValid && isConfirmPasswordValid) {
+                // Register user
+                viewModel.register();
+                observeResult();
+            }
+        });
+
+        // Login button
+        binding.btnLogin.setOnClickListener(v -> {
+            Intent intent = new Intent(RegisterActivity.this, LoginActivity.class);
+            startActivity(intent);
+            finish();
+        });
+    }
+
+    private void observeViewModel() {
+        // Observe validation errors
+        viewModel.getFullNameError().observe(this, error -> {
+            binding.tilFullName.setError(error);
+        });
+
+        viewModel.getEmailError().observe(this, error -> {
+            binding.tilEmail.setError(error);
+        });
+
+        viewModel.getUsernameError().observe(this, error -> {
+            binding.tilUsername.setError(error);
+        });
+
+        viewModel.getPhoneError().observe(this, error -> {
+            binding.tilPhone.setError(error);
+        });
+
+        viewModel.getPasswordError().observe(this, error -> {
+            binding.tilPassword.setError(error);
+        });
+
+        viewModel.getConfirmPasswordError().observe(this, error -> {
+            binding.tilConfirmPassword.setError(error);
+        });
+
+        // Observe form validity
+        viewModel.getIsFormValid().observe(this, isValid -> {
+            binding.btnRegister.setEnabled(isValid);
+            binding.btnRegister.setAlpha(isValid ? 1.0f : 0.6f);
+        });
+
+        // Observe registration result
+        viewModel.register().observe(this, result -> {
+            if (result.getStatus() == Resource.Status.LOADING) {
+                showLoading(true);
+            } else if (result.getStatus() == Resource.Status.SUCCESS) {
+                showLoading(false);
+                showRegistrationSuccess();
+            } else if (result.getStatus() == Resource.Status.ERROR) {
+                showLoading(false);
+                showError(result.getMessage());
+            }
+        });
+    }
+
+    private void observeResult() {
+        viewModel.getResultRegisterState().observe(this, isSuccess -> {
+            switch (isSuccess.getStatus()) {
                 case SUCCESS:
-                    Toast.makeText(RegisterActivity.this,
-                            "Registration successful. Please check your email for verification",
-                            Toast.LENGTH_LONG).show();
-                    finish();
+                    showRegistrationSuccess();
                     break;
                 case ERROR:
-                    Toast.makeText(RegisterActivity.this,
-                            response.getMessage(),
-                            Toast.LENGTH_LONG).show();
+                    Toast.makeText(RegisterActivity.this, isSuccess.getMessage(), Toast.LENGTH_LONG).show();
+                    Snackbar.make(findViewById(android.R.id.content), isSuccess.getMessage(), 2000).show();
                     break;
                 case LOADING:
                     // Already showing progress bar
                     break;
             }
         });
+    }
+
+    private void showLoading(boolean isLoading) {
+        binding.progressBar.setVisibility(isLoading ? View.VISIBLE : View.GONE);
+        binding.btnRegister.setEnabled(!isLoading);
+        binding.btnRegister.setText(isLoading ? "" : getString(R.string.btn_register));
+    }
+
+    private void showRegistrationSuccess() {
+        Toast.makeText(this, "Registration successful! Please verify your email.", Toast.LENGTH_LONG).show();
+
+        // Navigate to email verification activity or login screen
+//        Intent intent = new Intent(RegisterActivity.this, EmailVerificationActivity.class);
+//        intent.putExtra("email", viewModel.getEmail().getValue());
+//        startActivity(intent);
+        finish();
+    }
+
+    private void showError(String errorMessage) {
+        Toast.makeText(this, errorMessage, Toast.LENGTH_LONG).show();
     }
 }

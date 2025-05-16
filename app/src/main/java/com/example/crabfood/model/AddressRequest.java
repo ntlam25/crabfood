@@ -1,10 +1,8 @@
 package com.example.crabfood.model;
 
 public class AddressRequest {
-    private String addressLine;
-    private String city;
-    private String district;
-    private String ward;
+    private String addressName;
+    private String fullAddress;
     private Double latitude;
     private Double longitude;
     private Boolean isDefault;
@@ -14,14 +12,12 @@ public class AddressRequest {
     public AddressRequest() {
     }
 
-    public AddressRequest(String addressLine, String city, String district,
+    public AddressRequest(String fullAddress, String addressName, String district,
                           String ward, Double latitude, Double longitude,
                           Boolean isDefault, String recipientName,
                           String recipientPhone) {
-        this.addressLine = addressLine;
-        this.city = city;
-        this.district = district;
-        this.ward = ward;
+        this.fullAddress = fullAddress;
+        this.addressName = addressName;
         this.latitude = latitude;
         this.longitude = longitude;
         this.isDefault = isDefault;
@@ -29,36 +25,20 @@ public class AddressRequest {
         this.recipientPhone = recipientPhone;
     }
 
-    public String getAddressLine() {
-        return addressLine;
+    public String getAddressName() {
+        return addressName;
     }
 
-    public void setAddressLine(String addressLine) {
-        this.addressLine = addressLine;
+    public void setAddressName(String addressName) {
+        this.addressName = addressName;
     }
 
-    public String getCity() {
-        return city;
+    public String getFullAddress() {
+        return fullAddress;
     }
 
-    public void setCity(String city) {
-        this.city = city;
-    }
-
-    public String getDistrict() {
-        return district;
-    }
-
-    public void setDistrict(String district) {
-        this.district = district;
-    }
-
-    public String getWard() {
-        return ward;
-    }
-
-    public void setWard(String ward) {
-        this.ward = ward;
+    public void setFullAddress(String city) {
+        this.fullAddress = city;
     }
 
     public Double getLatitude() {

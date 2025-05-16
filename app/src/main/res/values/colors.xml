@@ -115,4 +115,16 @@
     <color name="green_900">#08513f</color>
 
     <color name="coral">#ff7a61</color>
+
+    <!-- Background Colors -->
+    <color name="background">#F9F9F9</color>
+    <color name="surface">#FFFFFF</color>
+    <color name="error">#F44336</color>
+    <color name="success">#4CAF50</color>
+
+
+    <!-- Input Stroke Color Selector -->
+    <color name="input_stroke_default">#BDBDBD</color>
+    <color name="input_stroke_focused">@color/primary_500</color>
+    <color name="input_stroke_error">@color/error</color>
 </resources>

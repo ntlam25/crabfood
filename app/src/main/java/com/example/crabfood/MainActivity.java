@@ -1,17 +1,16 @@
 package com.example.crabfood;
 
 
-import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
-import android.view.MenuItem;
+import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
 import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
+import androidx.core.app.ActivityCompat;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
 import androidx.navigation.NavDestination;
@@ -20,8 +19,9 @@ import androidx.navigation.fragment.NavHostFragment;
 import androidx.navigation.ui.NavigationUI;
 
 import com.example.crabfood.databinding.ActivityMainBinding;
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationServices;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
-import com.google.android.material.navigation.NavigationBarView;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -31,8 +31,7 @@ public class MainActivity extends AppCompatActivity {
     private ActivityMainBinding binding;
     private long backPressedTime = 0;
     private Toast toast;
-//    private CartViewModel cartViewModel;
-
+    private FusedLocationProviderClient fusedLocationClient;
     // Danh sách 5 ID fragment cần hiển thị Bottom Navigation
     private final Set<Integer> fragmentsWithBottomNav = new HashSet<>(Arrays.asList(
             R.id.homeFragment,
@@ -65,6 +64,7 @@ public class MainActivity extends AppCompatActivity {
 //            updateCartBadge(cartItems.size());
 //        });
     }
+
     private void updateCartBadge(int itemCount) {
         // Cập nhật badge trên biểu tượng giỏ hàng
         // Tùy thuộc vào cách triển khai UI

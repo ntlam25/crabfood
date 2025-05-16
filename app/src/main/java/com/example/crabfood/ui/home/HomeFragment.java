@@ -1,5 +1,6 @@
 package com.example.crabfood.ui.home;
 
+import android.location.Location;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -19,8 +20,10 @@ import com.example.crabfood.R;
 import com.example.crabfood.adapter.CategoryAdapter;
 import com.example.crabfood.adapter.VendorAdapter;
 import com.example.crabfood.databinding.FragmentHomeBinding;
+import com.example.crabfood.helpers.LocationHelper;
 import com.example.crabfood.model.VendorResponse;
 import com.example.crabfood.ui.vendor.VendorListFragment;
+import com.google.android.material.snackbar.Snackbar;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,21 +31,22 @@ import java.util.List;
 public class HomeFragment extends Fragment
         implements CategoryAdapter.OnMoreClickListener,
         CategoryAdapter.OnCategoryClickListener,
-        VendorAdapter.OnVendorClick{
+        VendorAdapter.OnVendorClick {
 
     private static final String TAG = "HomeFragment";
     private FragmentHomeBinding binding;
 
     private HomeViewModel viewModel;
     private CategoryAdapter categoryAdapter;
-
     private VendorListFragment vendorListFragment;
     private List<Object> categories = new ArrayList<>();
     private List<VendorResponse> vendors = new ArrayList<>();
+    private Location location;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
     }
 
     @Override
@@ -56,6 +60,8 @@ public class HomeFragment extends Fragment
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         viewModel = new ViewModelProvider(this).get(HomeViewModel.class);
+
+        getCurrentLocation();
         setupCategoryRecyclerView();
         setupVendorRecyclerView();
         observeData();
@@ -72,6 +78,39 @@ public class HomeFragment extends Fragment
         binding.rvCategories.setAdapter(categoryAdapter);
     }
 
+    private void getCurrentLocation() {
+        LocationHelper.getCurrentLocation(requireActivity(), new LocationHelper.LocationCallbackInterface() {
+            @Override
+            public void onLocationResult(Location location) {
+                if (location != null) {
+                    HomeFragment.this.location = location;
+                    // Xử lý khi có vị trí
+                    String locationText = String.format(
+                            "Vị trí hiện tại:\n" +
+                                    "- Vĩ độ (Latitude): %.6f\n" +
+                                    "- Kinh độ (Longitude): %.6f\n" +
+                                    "- Độ chính xác: %.1f mét",
+                            location.getLatitude(),
+                            location.getLongitude(),
+                            location.getAccuracy()
+                    );
+                    viewModel.loadVendors(location.getLatitude(), location.getLongitude(), 5);
+                    Log.d(TAG, "Location updated: " + locationText);
+                } else {
+                    Snackbar.make(binding.getRoot(),"Không thể lấy được vị trí!",2000);
+                }
+            }
+
+            @Override
+            public void onLocationError(String error) {
+                // Xử lý khi có lỗi
+                Toast.makeText(requireContext(),
+                        "Lỗi lấy vị trí: " + error, Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+
     private void setupVendorRecyclerView() {
         vendorListFragment = new VendorListFragment();
 
@@ -84,8 +123,6 @@ public class HomeFragment extends Fragment
             public void onClick(View v) {
                 NavController navController = Navigation.findNavController(requireActivity(), R.id.nav_host_fragment);
                 Bundle args = new Bundle();
-                args.putFloat("latitude", 21.02795F);
-                args.putFloat("longitude", 105.83416F);
                 args.putFloat("radius", 5F);
                 navController.navigate(R.id.action_home_to_view_all_vendor_nearby, args);
 
@@ -142,7 +179,6 @@ public class HomeFragment extends Fragment
         showLoading(true);
         binding.swipeRefresh.setRefreshing(true);
         viewModel.loadCategories();
-        viewModel.loadVendors(21.02795, 105.83416, 5);
         showLoading(false);
     }
 
@@ -172,6 +208,7 @@ public class HomeFragment extends Fragment
 
         Toast.makeText(requireContext(), "Tất cả danh mục", Toast.LENGTH_SHORT).show();
     }
+
     @Override
     public void onVendorClick(VendorResponse vendor, int position) {
         Log.d(TAG, "Click on vendor");

@@ -1,24 +1,21 @@
 package com.example.crabfood.ui.address;
 
-import androidx.lifecycle.ViewModelProvider;
-
+import android.content.Intent;
 import android.os.Bundle;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
-import androidx.navigation.Navigation;
-import androidx.recyclerview.widget.DividerItemDecoration;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
-import com.example.crabfood.R;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
+import androidx.navigation.Navigation;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.example.crabfood.adapter.AddressAdapter;
 import com.example.crabfood.databinding.FragmentAddressBinding;
 import com.example.crabfood.model.AddressResponse;
@@ -53,6 +50,13 @@ public class AddressFragment extends Fragment implements
         rvAddresses = binding.rvAddresses;
 
         setupToolbar();
+        binding.buttonAddAddress.setOnClickListener(v -> {
+            // Handle add new address
+            Intent intent = new Intent(getActivity(), AddAddressActivity.class);
+            startActivity(intent);
+
+        });
+
         observe();
     }
 
@@ -101,11 +105,6 @@ public class AddressFragment extends Fragment implements
     }
 
     private void setupButtons() {
-        binding.buttonAddAddress.setOnClickListener(v -> {
-            // Handle add new address
-            showAddAddressDialog();
-        });
-
         binding.buttonApply.setOnClickListener(v -> {
             if (selectedAddress != null) {
                 // Nếu không có địa chỉ tạm thời nhưng có địa chỉ được chọn

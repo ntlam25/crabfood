@@ -14,7 +14,10 @@ import androidx.lifecycle.ViewModelProvider;
 import com.example.crabfood.MainActivity;
 import com.example.crabfood.R;
 import com.example.crabfood.helpers.Resource;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textfield.TextInputEditText;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -87,7 +90,10 @@ public class LoginActivity extends AppCompatActivity {
                     // Login successful, navigation handled by authenticationState observer
                     break;
                 case ERROR:
-                    Toast.makeText(LoginActivity.this, response.getMessage(), Toast.LENGTH_LONG).show();
+                    JsonObject jsonObject = JsonParser.parseString(response.getMessage()).getAsJsonObject();
+                    String message = jsonObject.get("error").getAsString();
+                    Toast.makeText(LoginActivity.this, message, Toast.LENGTH_LONG).show();
+                    Snackbar.make(findViewById(android.R.id.content), message,2000).show();
                     break;
                 case LOADING:
                     // Already showing progress bar

@@ -54,16 +54,6 @@ public class AuthViewModel extends AndroidViewModel {
         return loginResponse;
     }
 
-    public LiveData<Resource<UserResponse>> register(String email, String username, String password,
-                                                     String fullName, String phone) {
-        SignupRequest request = new SignupRequest(email, username, password, fullName, phone);
-        return authRepository.register(request);
-    }
-
-    public LiveData<Resource<String>> verifyEmail(String token) {
-        return authRepository.verifyEmail(token);
-    }
-
     public LiveData<Resource<Boolean>> getAuthenticationState() {
         return authenticationState;
     }

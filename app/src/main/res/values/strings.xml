@@ -14,6 +14,11 @@
     <string name="hint_email">Email</string>
     <string name="hint_password">Mật khẩu</string>
     <string name="hint_phone">Số điện thoại</string>
+    <string name="verification_title">Xác thực email của bạn</string>
+    <string name="verification_message">Kiểm tra email của bạn để lấy mã xác nhận \n và nhập mã xác nhận</string>
+    <string name="btn_verify_email">Xác nhận</string>
+    <string name="btn_back_to_login">Quay lại đăng nhập</string>
+    <string name="resend_verification">Gửi lại email xác nhận</string>
     <string name="hint_otp">Mã OTP</string>
     <string name="btn_login">Đăng nhập</string>
     <string name="btn_send_otp">Gửi OTP</string>
@@ -128,8 +133,13 @@
     <string name="hint_zip_code">Mã bưu điện</string>
     <string name="set_as_default">Đặt làm địa chỉ mặc định</string>
     <string name="get_current_location">Lấy vị trí hiện tại</string>
+    <string name="search_location">Tìm kiếm vị trí</string>
     <string name="save_address">Lưu địa chỉ</string>
+    <string name="select_location">Chọn địa chỉ</string>
     <string name="delete_address">Xoá địa chỉ</string>
+    <string name="address_not_found">Không tìm thấy địa chỉ</string>
+    <string name="location_permission_explanation">Giải thích về quyền địa chỉ</string>
+    <string name="location_permission_denied">Quyền địa chỉ bị từ chối</string>
 
     <!-- Profile -->
     <string name="my_profile">Hồ sơ của tôi</string>
