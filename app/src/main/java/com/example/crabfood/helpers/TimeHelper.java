@@ -2,6 +2,10 @@ package com.example.crabfood.helpers;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.Locale;
 
@@ -26,5 +30,21 @@ public class TimeHelper {
             e.printStackTrace();
         }
         return "Giờ mở cửa: chưa biết";
+    }
+
+    // Chuyển từ String ISO sang java.time.LocalDateTime
+    public static LocalDateTime parseIsoToLocalDateTime(String isoString) {
+        try {
+            return LocalDateTime.parse(isoString, DateTimeFormatter.ISO_LOCAL_DATE_TIME);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    // Format LocalDateTime sang String
+    public static String formatLocalDateTime(LocalDateTime localDateTime) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
+        return localDateTime.format(formatter);
     }
 }

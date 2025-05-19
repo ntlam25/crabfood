@@ -90,10 +90,8 @@ public class LoginActivity extends AppCompatActivity {
                     // Login successful, navigation handled by authenticationState observer
                     break;
                 case ERROR:
-                    JsonObject jsonObject = JsonParser.parseString(response.getMessage()).getAsJsonObject();
-                    String message = jsonObject.get("error").getAsString();
-                    Toast.makeText(LoginActivity.this, message, Toast.LENGTH_LONG).show();
-                    Snackbar.make(findViewById(android.R.id.content), message,2000).show();
+                    Snackbar.make(findViewById(android.R.id.content), "Lỗi kết nối: " +
+                            response.getMessage() ,1000).show();
                     break;
                 case LOADING:
                     // Already showing progress bar

@@ -30,44 +30,6 @@ public class CartManager {
         return instance;
     }
 
-    public boolean addToCart(Context context,FoodResponse food, int quantity, List<OptionChoiceResponse> selectedOptions) {
-        if (vendorId != null && vendorId != food.getVendorId()) {
-            Toast.makeText(context, "Không thể thêm món ăn từ nhà hàng khác", Toast.LENGTH_SHORT).show();
-            return false;
-        }
-
-        if (vendorId == null) {
-            vendorId = food.getVendorId();
-        }
-
-        CartItemEntity existingItem = database.cartDao().getCartItemByFoodId(food.getId());
-        if (existingItem != null) {
-            existingItem.setQuantity(existingItem.getQuantity() + quantity);
-            database.cartDao().updateCartItem(existingItem);
-        } else {
-            CartItemEntity cartItem = new CartItemEntity();
-            cartItem.setFoodId(food.getId());
-            cartItem.setFoodName(food.getName());
-            cartItem.setPrice(food.getPrice());
-            cartItem.setImageUrl(food.getImageUrl());
-            cartItem.setVendorId(food.getVendorId());
-            cartItem.setSelectedOptions(selectedOptions);
-            cartItem.setQuantity(quantity);
-
-            database.cartDao().insertCartItem(cartItem);
-        }
-        Toast.makeText(context, "Đã thêm vào giỏ hàng", Toast.LENGTH_SHORT).show();
-        return true;
-    }
-
-    public void removeFromCart(CartItemEntity cartItem) {
-        database.cartDao().deleteCartItem(cartItem);
-
-        if (database.cartDao().getAllCartItemsSync().isEmpty()) {
-            vendorId = null;
-        }
-    }
-
     // Helper method to compare two option maps
     public static boolean areOptionsEqual(List<OptionChoiceResponse> options1, List<OptionChoiceResponse> options2) {
         if (options1 == null && options2 == null) return true;
@@ -84,32 +46,6 @@ public class CartManager {
                 .collect(Collectors.toSet());
 
         return ids1.equals(ids2);
-    }
-
-    public void updateQuantity(CartItemEntity cartItem, int newQuantity) {
-        cartItem.setQuantity(newQuantity);
-        database.cartDao().updateItemQuantity(cartItem.getId(), newQuantity);
-    }
-
-    public List<CartItemEntity> getCartItems() {
-        return database.cartDao().getAllCartItemsSync();
-    }
-
-    public LiveData<List<CartItemEntity>> getCartItemsLiveData() {
-        return database.cartDao().getAllCartItems();
-    }
-
-    public long getCurrentVendorId() {
-        return vendorId;
-    }
-
-    public void clearCart() {
-        database.cartDao().clearCart();
-        vendorId = null;
-    }
-
-    public boolean canAddCartItem(long vendorId) {
-        return this.vendorId == null || this.vendorId == vendorId;
     }
 
 }

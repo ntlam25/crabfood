@@ -26,6 +26,7 @@ import com.example.crabfood.model.FoodOptionResponse;
 import com.example.crabfood.model.FoodResponse;
 import com.example.crabfood.model.OptionChoiceResponse;
 import com.example.crabfood.ui.cart.CartViewModel;
+import com.example.crabfood.ui.vendor.VendorDetailViewModel;
 import com.google.android.material.snackbar.Snackbar;
 
 import java.util.ArrayList;
@@ -40,9 +41,11 @@ public class FoodDetailFragment extends Fragment {
     private final String TAG = "Food Detail";
     private FragmentFoodDetailBinding binding;
     private FoodDetailViewModel viewModel;
+    private VendorDetailViewModel vendorDetailViewModel;
 
     private CartViewModel cartViewModel;
     private Long foodId;
+    private Long vendorId;
     private FoodResponse food;
     private boolean isExpanded = false;
     // Store selected options for cart
@@ -61,9 +64,11 @@ public class FoodDetailFragment extends Fragment {
 
         viewModel = new ViewModelProvider(this).get(FoodDetailViewModel.class);
         cartViewModel = new ViewModelProvider(this).get(CartViewModel.class);
+        vendorDetailViewModel = new ViewModelProvider(this).get(VendorDetailViewModel.class);
 
         if (getArguments() != null) {
             foodId = getArguments().getLong("foodId", 0);
+            vendorId = getArguments().getLong("vendorId", 0);
         }
 
         setupToolbar();
@@ -100,6 +105,10 @@ public class FoodDetailFragment extends Fragment {
                 Log.d("Food Detail: ", errorMsg);
                 Toast.makeText(requireContext(), errorMsg, Toast.LENGTH_SHORT).show();
             }
+        });
+
+        vendorDetailViewModel.findVendorById(vendorId).observe(getViewLifecycleOwner(), vendorResponse -> {
+            binding.textViewVendorName.setText(vendorResponse.getName());
         });
 
         // Observe quantity changes

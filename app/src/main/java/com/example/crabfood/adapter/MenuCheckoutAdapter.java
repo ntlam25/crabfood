@@ -55,7 +55,9 @@ public class MenuCheckoutAdapter extends RecyclerView.Adapter<MenuCheckoutAdapte
             binding.title.setText(item.getTitle());
             binding.icon.setColorFilter(ContextCompat.getColor(itemView.getContext(), item.getIconColorRes()), PorterDuff.Mode.SRC_IN);
             binding.selectedContent.setText(item.getSelectedContent());
-            itemView.setOnClickListener(v -> listener.onItemClick(item.getAction()));
+            if (listener != null ){
+                itemView.setOnClickListener(v -> listener.onItemClick(item.getAction()));
+            }
         }
     }
 

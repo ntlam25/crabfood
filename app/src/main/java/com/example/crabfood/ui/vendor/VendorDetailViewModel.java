@@ -37,6 +37,10 @@ public class VendorDetailViewModel extends ViewModel {
         return _error;
     }
 
+    public LiveData<VendorResponse> findVendorById(long vendorId) {
+        return repository.findVendorById(vendorId);
+    }
+
     public void loadVendor(Long id){
         LiveData<VendorResponse> source = repository.findVendorById(id);
 

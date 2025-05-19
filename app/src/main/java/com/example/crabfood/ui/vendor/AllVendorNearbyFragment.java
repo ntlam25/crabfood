@@ -63,19 +63,17 @@ public class AllVendorNearbyFragment extends Fragment {
                 if (location != null) {
                     AllVendorNearbyFragment.this.location = location;
                     // Xử lý khi có vị trí
-                    String locationText = String.format(
-                            "Vị trí hiện tại:\n" +
+                    String locationText = String.format("Vị trí hiện tại:\n" +
                                     "- Vĩ độ (Latitude): %.6f\n" +
                                     "- Kinh độ (Longitude): %.6f\n" +
                                     "- Độ chính xác: %.1f mét",
                             location.getLatitude(),
                             location.getLongitude(),
-                            location.getAccuracy()
-                    );
+                            location.getAccuracy());
                     viewModel.loadVendors(location.getLatitude(), location.getLongitude(), 5, null, null, null, null, null, null);
                     Log.d(TAG, "Location updated: " + locationText);
                 } else {
-                    Snackbar.make(binding.getRoot(),"Không thể lấy được vị trí!",2000);
+                    Snackbar.make(binding.getRoot(),"Không thể lấy được vị trí!",Snackbar.LENGTH_SHORT).show();
                 }
             }
 
@@ -84,6 +82,7 @@ public class AllVendorNearbyFragment extends Fragment {
                 // Xử lý khi có lỗi
                 Toast.makeText(requireContext(),
                         "Lỗi lấy vị trí: " + error, Toast.LENGTH_SHORT).show();
+                Snackbar.make(requireView(), "Lỗi lấy vị trí: " + error, Snackbar.LENGTH_SHORT).show();
             }
         });
     }

@@ -30,8 +30,7 @@ import java.util.List;
 
 public class HomeFragment extends Fragment
         implements CategoryAdapter.OnMoreClickListener,
-        CategoryAdapter.OnCategoryClickListener,
-        VendorAdapter.OnVendorClick {
+        CategoryAdapter.OnCategoryClickListener{
 
     private static final String TAG = "HomeFragment";
     private FragmentHomeBinding binding;
@@ -207,11 +206,5 @@ public class HomeFragment extends Fragment
         navController.navigate(R.id.action_homeFragment_to_allCategoriesFragment);
 
         Toast.makeText(requireContext(), "Tất cả danh mục", Toast.LENGTH_SHORT).show();
-    }
-
-    @Override
-    public void onVendorClick(VendorResponse vendor, int position) {
-        Log.d(TAG, "Click on vendor");
-        // Handle vendor click
     }
 }

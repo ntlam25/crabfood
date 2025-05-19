@@ -2,6 +2,7 @@ package com.example.crabfood;
 
 
 import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -28,6 +29,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 public class MainActivity extends AppCompatActivity {
+    private static final String TAG = "Main Activity";
     private ActivityMainBinding binding;
     private long backPressedTime = 0;
     private Toast toast;
@@ -46,6 +48,22 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         binding = ActivityMainBinding.inflate(getLayoutInflater());
 
+        Uri data = getIntent().getData();
+        if (data != null && "crabfood".equals(data.getScheme())) {
+            String status = data.getQueryParameter("status");
+            String orderId = data.getQueryParameter("orderId");
+
+            // Gửi dữ liệu này đến OrdersFragment khi nó được hiển thị
+            Bundle bundle = new Bundle();
+            bundle.putString("payment_status", status);
+            bundle.putString("order_id", orderId);
+
+            NavHostFragment navHostFragment = (NavHostFragment) getSupportFragmentManager()
+                    .findFragmentById(R.id.nav_host_fragment);
+            NavController navController = navHostFragment.getNavController();
+            navController.navigate(R.id.ordersFragment, bundle);
+            getIntent().setData(null);
+        }
         setupCart();
         setContentView(binding.getRoot());
         setupNavigationView();

@@ -153,9 +153,32 @@
         android:name="com.example.crabfood.ui.checkout.CheckoutFragment"
         android:label="@string/checkout"
         tools:layout="@layout/fragment_checkout"></fragment>
+
+    <fragment
+        android:id="@+id/orderDetailFragment"
+        android:name="com.example.crabfood.ui.order.OrderDetailFragment"
+        android:label="@string/detail_order"
+        tools:layout="@layout/fragment_order_detail"></fragment>
+    <fragment
+        android:id="@+id/upcomingOrdersFragment"
+        android:name="com.example.crabfood.ui.order.UpcomingFragment"
+        android:label="@string/upcoming_order"
+        tools:layout="@layout/fragment_upcoming">
+        <argument
+            android:name="orderId"
+            app:argType="long" />
+    </fragment>
+    <fragment
+        android:id="@+id/historyOrdersFragment"
+        android:name="com.example.crabfood.ui.order.OrderHistoryFragment"
+        android:label="@string/history_order"
+        tools:layout="@layout/fragment_order_history"></fragment>
     <action
         android:id="@+id/action_to_my_address"
         app:destination="@+id/addressFragment" />
+    <action
+        android:id="@+id/action_upcomingFragment_to_orderDetailFragment"
+        app:destination="@+id/orderDetailFragment" />
     <action
         android:id="@+id/action_to_cart_fragment"
         app:destination="@id/cartFragment" />

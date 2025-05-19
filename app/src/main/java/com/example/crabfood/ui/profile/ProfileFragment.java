@@ -22,6 +22,7 @@ import com.bumptech.glide.Glide;
 import com.example.crabfood.R;
 import com.example.crabfood.adapter.MenuProfileAdapter;
 import com.example.crabfood.databinding.FragmentProfileBinding;
+import com.example.crabfood.helpers.CustomDialogConfirm;
 import com.example.crabfood.helpers.SessionManager;
 import com.example.crabfood.model.MenuItemProfile;
 import com.example.crabfood.model.UserResponse;
@@ -63,7 +64,7 @@ public class ProfileFragment extends Fragment {
 
     private void observe() {
         authViewModel.getCurrentUser().observe(getViewLifecycleOwner(), userResponse -> {
-            if (userResponse != null){
+            if (userResponse != null) {
                 user = userResponse;
                 setupInfo();
             }
@@ -84,7 +85,7 @@ public class ProfileFragment extends Fragment {
 
     private void setupToolbar() {
         binding.toolbarProfile.setNavigationOnClickListener(v ->
-            Navigation.findNavController(requireView()).navigateUp());
+                Navigation.findNavController(requireView()).navigateUp());
     }
 
     private void setupListMenu() {
@@ -124,30 +125,18 @@ public class ProfileFragment extends Fragment {
     }
 
     private void showLogoutDialog() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-        View view = LayoutInflater.from(getContext()).inflate(R.layout.custom_dialog, null);
-        builder.setView(view);
+        new CustomDialogConfirm(requireContext())
+                .setTitle("Đăng xuất")
+                .setMessage("Bạn có muốn đăng xuất không")
+                .setButtonNegativeText("Huỷ")
+                .setButtonPositiveText("Đăng xuất")
+                .setListener(() -> {
+                    authViewModel.logout();
 
-        AlertDialog dialog = builder.create();
-        dialog.setCancelable(true);
-
-        Button btnCancel = view.findViewById(R.id.btn_cancel);
-        Button btnLogout = view.findViewById(R.id.btn_logout);
-
-        btnCancel.setOnClickListener(v -> dialog.dismiss());
-
-        btnLogout.setOnClickListener(v -> {
-            // TODO: Thực hiện xóa session/token
-            authViewModel.logout();
-
-            // Ví dụ: chuyển về màn hình login
-            Intent intent = new Intent(getActivity(), LoginActivity.class);
-            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-            startActivity(intent);
-
-            dialog.dismiss();
-        });
-
-        dialog.show();
+                    Intent intent = new Intent(getActivity(), LoginActivity.class);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                    startActivity(intent);
+                })
+                .show();
     }
 }

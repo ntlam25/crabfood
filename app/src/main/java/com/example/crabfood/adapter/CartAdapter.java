@@ -22,6 +22,7 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.CartViewHolder
 
     private List<CartItemEntity> cartItems;
     private final CartItemListener listener;
+    private boolean canAction = true;
 
     public interface CartItemListener {
         void onQuantityChanged(long itemId, int quantity);
@@ -29,9 +30,10 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.CartViewHolder
         void onRemoveItem(long itemId);
     }
 
-    public CartAdapter(List<CartItemEntity> cartItems, CartItemListener listener) {
+    public CartAdapter(List<CartItemEntity> cartItems, CartItemListener listener, boolean canAction) {
         this.cartItems = cartItems;
         this.listener = listener;
+        this.canAction = canAction;
     }
 
     public void updateCartItems(List<CartItemEntity> newCartItems) {
@@ -94,12 +96,12 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.CartViewHolder
             StringBuilder optionsText = new StringBuilder();
             List<OptionChoiceResponse> options = item.getSelectedOptions();
             if (options != null && !options.isEmpty()) {
-                    for (OptionChoiceResponse choice : options) {
-                        optionsText.append("• ").append(choice.getName());
-                        if (choice.getPriceAdjustment() > 0) {
-                            optionsText.append(" (+").append(String.format(Locale.getDefault(), "%,.0f đ", choice.getPriceAdjustment())).append(")");
-                        }
-                        optionsText.append("\n");
+                for (OptionChoiceResponse choice : options) {
+                    optionsText.append("• ").append(choice.getName());
+                    if (choice.getPriceAdjustment() > 0) {
+                        optionsText.append(" (+").append(String.format(Locale.getDefault(), "%,.0f đ", choice.getPriceAdjustment())).append(")");
+                    }
+                    optionsText.append("\n");
                 }
                 binding.textViewOptions.setText(optionsText.toString().trim());
                 binding.textViewOptions.setVisibility(View.VISIBLE);
@@ -122,6 +124,12 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.CartViewHolder
             });
 
             binding.buttonRemove.setOnClickListener(v -> listener.onRemoveItem(item.getId()));
+            if (!canAction) {
+                binding.buttonDecrease.setVisibility(View.GONE);
+                binding.buttonIncrease.setVisibility(View.GONE);
+                binding.textViewQuantity.setText("Số lượng: " + item.getQuantity());
+                binding.buttonRemove.setVisibility(View.GONE);
+            }
         }
     }
 }

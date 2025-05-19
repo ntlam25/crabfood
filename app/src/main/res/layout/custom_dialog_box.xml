@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="300dp"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:background="@drawable/search_background"
+    android:layout_gravity="center"
+    android:padding="24dp"
+    android:gravity="center">
+
+    <TextView
+        android:id="@+id/tv_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:textColor="@color/black"
+        android:gravity="center"
+        android:text="Kết quả thanh toán"/>
+    <ImageView
+        android:id="@+id/icon_dialog"
+        android:layout_width="52dp"
+        android:layout_height="52dp"
+        android:background="@drawable/ic_check"/>
+
+    <TextView
+        android:id="@+id/tv_message"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:textColor="@color/black"
+        android:gravity="center"
+        android:layout_marginTop="16dp"
+        android:text="Thanh toán thành công!"/>
+
+    <TextView
+        android:id="@+id/tv_sub_message"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="14sp"
+        android:textColor="@color/gray"
+        android:gravity="center"
+        android:layout_marginTop="8dp"
+        android:text="Hẹn bạn trong đơn hàng tới!"/>
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btn_ok"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:layout_marginTop="24dp"
+        android:text="OK"
+        android:backgroundTint="@color/primary_500"
+        app:cornerRadius="8dp"
+        android:textColor="@color/white"
+        android:textAllCaps="false"/>
+
+</LinearLayout>

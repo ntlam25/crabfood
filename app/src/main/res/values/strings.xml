@@ -94,6 +94,9 @@
     <string name="from_restaurant">Từ %1$s</string>
     <string name="remove_item">Xoá</string>
     <string name="clear_cart">Xoá giỏ hàng</string>
+    <string name="detail_order">Chi tiết đơn hàng</string>
+    <string name="upcoming_order">Đơn hàng đang tới</string>
+    <string name="history_order">Lịch sử đơn hàng</string>
 
     <!-- Checkout -->
     <string name="checkout_title">Thanh toán</string>
@@ -242,7 +245,7 @@
 
     <!-- Cart -->
     <string name="cart">Cart</string>
-    <string name="empty_cart">Your cart is empty</string>
+    <string name="empty_cart">Giỏ hàng trống</string>
     <string name="proceed_to_checkout">Proceed to Checkout</string>
     <string name="apply_coupon">Apply Coupon</string>
     <string name="coupon_code">Coupon Code</string>

@@ -11,7 +11,6 @@ import androidx.viewpager2.adapter.FragmentStateAdapter;
 import com.example.crabfood.ui.food.FoodListFragment;
 
 public class FoodPagerAdapter extends FragmentStateAdapter {
-    private final String[] types = {"Phổ biến", "Nổi bật", "Món mới"};
     private final long vendorId;
     public FoodPagerAdapter(@NonNull Fragment fragment, long vendorId) {
         super(fragment);

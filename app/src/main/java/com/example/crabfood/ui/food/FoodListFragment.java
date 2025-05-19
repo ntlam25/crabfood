@@ -124,6 +124,7 @@ public class FoodListFragment extends Fragment
         NavController navController = Navigation.findNavController(requireActivity(), R.id.nav_host_fragment);
         Bundle args = new Bundle();
         args.putLong("foodId", food.getId());
+        args.putLong("vendorId", food.getVendorId());
         navController.navigate(R.id.action_to_food_detail, args);
     }
 

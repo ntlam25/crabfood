@@ -70,7 +70,7 @@ public class CartFragment extends Fragment implements CartAdapter.CartItemListen
     }
 
     private void setupRecyclerView() {
-        cartAdapter = new CartAdapter(null, this);
+        cartAdapter = new CartAdapter(null, this, true);
         binding.recyclerViewCart.setLayoutManager(new LinearLayoutManager(requireContext()));
         binding.recyclerViewCart.setAdapter(cartAdapter);
     }

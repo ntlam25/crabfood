@@ -15,6 +15,7 @@ import com.example.crabfood.model.AddressResponse;
 import com.example.crabfood.model.CartItemEntity;
 import com.example.crabfood.model.OrderRequest;
 import com.example.crabfood.model.OrderResponse;
+import com.example.crabfood.model.PaymentResponse;
 import com.example.crabfood.repository.CartRepository;
 import com.example.crabfood.repository.OrderRepository;
 import com.google.android.material.snackbar.Snackbar;
@@ -31,6 +32,7 @@ public class CheckoutViewModel extends AndroidViewModel {
     private final MutableLiveData<OrderState> orderState = new MutableLiveData<>(OrderState.IDLE);
     private final MutableLiveData<String> orderError = new MutableLiveData<>();
     private final MutableLiveData<OrderResponse> placedOrder = new MutableLiveData<>();
+    private final MutableLiveData<PaymentResponse> orderPaymentResponse = new MutableLiveData<>();
 
     // Payment method selection
     private final MutableLiveData<String> selectedPaymentMethod = new MutableLiveData<>("CASH");
@@ -67,6 +69,10 @@ public class CheckoutViewModel extends AndroidViewModel {
     public LiveData<OrderResponse> getPlacedOrder() {
         return placedOrder;
     }
+    public LiveData<PaymentResponse> getOrderPaymentResponse() {
+        return orderPaymentResponse;
+    }
+
 
     public LiveData<String> getSelectedPaymentMethod() {
         return selectedPaymentMethod;
@@ -153,22 +159,38 @@ public class CheckoutViewModel extends AndroidViewModel {
         );
 
         // Send order request
-        orderRepository.placeOrder(orderRequest, new OrderRepository.OrderCallback() {
-            @Override
-            public void onOrderSuccess(OrderResponse response) {
-                placedOrder.postValue(response);
-                orderState.postValue(OrderState.SUCCESS);
+        if (selectedPaymentMethod.getValue() == "CASH") {
+            orderRepository.placeOrder(orderRequest, new OrderRepository.OrderCallback() {
+                @Override
+                public void onOrderSuccess(OrderResponse response) {
+                    placedOrder.postValue(response);
+                    orderState.postValue(OrderState.SUCCESS);
 
-                // Clear cart after successful order
-                cartRepository.clearCart();
-            }
+                    // Clear cart after successful order
+                    cartRepository.clearCart();
+                }
 
-            @Override
-            public void onOrderFailure(String errorMessage) {
-                orderError.postValue(errorMessage);
-                orderState.postValue(OrderState.ERROR);
-            }
-        });
+                @Override
+                public void onOrderFailure(String errorMessage) {
+                    orderError.postValue(errorMessage);
+                    orderState.postValue(OrderState.ERROR);
+                }
+            });
+        } else {
+            orderRepository.placeOrderWithPayment(orderRequest, new OrderRepository.PaymentCallBack() {
+                @Override
+                public void onPaymentSuccess(PaymentResponse response) {
+                    orderPaymentResponse.postValue(response);
+                    orderState.postValue(OrderState.SUCCESS);
+                }
+
+                @Override
+                public void onPaymentFailure(String errorMessage) {
+                    orderError.postValue(errorMessage);
+                    orderState.postValue(OrderState.ERROR);
+                }
+            });
+        }
     }
 
     private OrderRequest createOrderRequest(Long vendorId, Long customerId, AddressResponse address,
@@ -182,6 +204,7 @@ public class CheckoutViewModel extends AndroidViewModel {
         request.setCustomerId(customerId);
 
         // Address details
+        Log.d(TAG, "createOrderRequest: " + address.getFullAddress() + " " + address.getId());
         if (address != null) {
             request.setDeliveryAddressId(address.getId());
             request.setDeliveryAddressText(address.getFullAddress());

@@ -1,7 +1,9 @@
 package com.example.crabfood.ui.checkout;
 
+import androidx.browser.customtabs.CustomTabsIntent;
 import androidx.lifecycle.ViewModelProvider;
 
+import android.net.Uri;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -233,15 +235,25 @@ public class CheckoutFragment extends Fragment implements CartAdapter.CartItemLi
     private void handleOrderSuccess() {
         viewModel.getPlacedOrder().observe(getViewLifecycleOwner(), orderResponse -> {
             if (orderResponse != null) {
-                // Navigate to order success screen with order ID
-                Snackbar.make(binding.getRoot(), "Đặt hàng thành công!", Snackbar.LENGTH_LONG).show();
                 cartViewModel.clearCart();
                 Bundle bundle = new Bundle();
-                bundle.putLong("orderId", orderResponse.getId());
+//                bundle.putLong("orderId", orderResponse.getId());
+                bundle.putString("payment_method", "CASH");
                 Navigation.findNavController(requireView()).navigate(
-                        R.id.homeFragment);
+                        R.id.ordersFragment, bundle);
             }
         });
+
+        viewModel.getOrderPaymentResponse().observe(getViewLifecycleOwner(), response -> {
+            if (response != null) {
+                String paymentUrl = response.getPaymentUrl();
+                openPaymentUrl(paymentUrl);
+            }
+        });
+    }
+    private void openPaymentUrl(String url) {
+        CustomTabsIntent intent = new CustomTabsIntent.Builder().build();
+        intent.launchUrl(requireContext(), Uri.parse(url));
     }
 
     private void handleOrderError() {
@@ -253,7 +265,7 @@ public class CheckoutFragment extends Fragment implements CartAdapter.CartItemLi
     }
 
     private void setupRecyclerViewItem() {
-        cartAdapter = new CartAdapter(null, this);
+        cartAdapter = new CartAdapter(null, this, true);
         binding.recyclerViewOrderItems.setLayoutManager(new LinearLayoutManager(requireContext()));
         binding.recyclerViewOrderItems.setAdapter(cartAdapter);
     }
@@ -291,14 +303,12 @@ public class CheckoutFragment extends Fragment implements CartAdapter.CartItemLi
     }
 
     private void navigateToPromotionScreen() {
-        // Có thể chuyển đến màn hình chọn mã giảm giá
-        // Hoặc hiển thị dialog chọn mã giảm giá đơn giản
         Toast.makeText(requireContext(), "Đang phát triển tính năng mã giảm giá", Toast.LENGTH_SHORT).show();
     }
 
     private void showPaymentMethodSelector() {
-        String[] paymentMethods = {"Tiền mặt", "Chuyển khoản ngân hàng"};
-        String[] paymentValues = {"CASH", "BANK_TRANSFER"};
+        String[] paymentMethods = {"Tiền mặt", "Thanh toán qua VNPay"};
+        String[] paymentValues = {"CASH", "VNPAY"};
 
         new MaterialAlertDialogBuilder(requireContext())
                 .setTitle("Chọn phương thức thanh toán")
@@ -316,7 +326,7 @@ public class CheckoutFragment extends Fragment implements CartAdapter.CartItemLi
                 return i;
             }
         }
-        return 0; // Default to first option
+        return 0;
     }
 
     @Override

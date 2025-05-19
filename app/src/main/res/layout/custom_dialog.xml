@@ -1,10 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="300dp"
+    android:layout_height="wrap_content"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:background="@drawable/search_background"
+    android:layout_gravity="center"
     android:padding="24dp"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@drawable/category_background">
+    android:gravity="center">
 
     <TextView
         android:id="@+id/dialog_title"
@@ -41,7 +44,7 @@
         app:layout_constraintTop_toBottomOf="@+id/dialog_message">
 
         <Button
-            android:id="@+id/btn_cancel"
+            android:id="@+id/btn_negative"
             android:text="Hủy"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -49,7 +52,7 @@
             android:backgroundTint="@color/neutral_200"/>
 
         <Button
-            android:id="@+id/btn_logout"
+            android:id="@+id/btn_positive"
             android:text="Đăng xuất"
             android:layout_marginStart="16dp"
             android:layout_width="wrap_content"
@@ -57,4 +60,4 @@
             android:textSize="16dp"
             android:backgroundTint="@color/primary_400"/>
     </LinearLayout>
-</androidx.constraintlayout.widget.ConstraintLayout>
+</LinearLayout>

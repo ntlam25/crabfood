@@ -4,26 +4,26 @@ package com.example.crabfood.model;
 import androidx.annotation.Nullable;
 
 public class VendorResponse {
-    public long id;
-    public long userId;
-    public String name;
-    public String description;
-    public String logoUrl;
-    public String coverImageUrl;
-    public String cuisineType;
-    public String address;
-    public double latitude;
-    public double longitude;
-    public double distance;
-    public double serviceRadiusKm;
-    public String openingTime;
-    public String closingTime;
-    public double rating;
-    public int totalReviews;
-    public double minOrderAmount;
-    public double deliveryFee;
-    public boolean open;
-    public boolean approved;
+    private long id;
+    private long userId;
+    private String name;
+    private String description;
+    private String logoUrl;
+    private String coverImageUrl;
+    private String cuisineType;
+    private String address;
+    private double latitude;
+    private double longitude;
+    private double distance;
+    private double serviceRadiusKm;
+    private String openingTime;
+    private String closingTime;
+    private double rating;
+    private int totalReviews;
+    private double minOrderAmount;
+    private double deliveryFee;
+    private boolean open;
+    private boolean approved;
 
     private boolean isFavorite = false;
 
