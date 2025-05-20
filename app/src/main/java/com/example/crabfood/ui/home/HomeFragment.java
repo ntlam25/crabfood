@@ -1,15 +1,24 @@
 package com.example.crabfood.ui.home;
 
+import android.Manifest;
+import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.location.Location;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
@@ -23,20 +32,23 @@ import com.example.crabfood.databinding.FragmentHomeBinding;
 import com.example.crabfood.helpers.LocationHelper;
 import com.example.crabfood.model.VendorResponse;
 import com.example.crabfood.ui.vendor.VendorListFragment;
-import com.google.android.material.snackbar.Snackbar;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class HomeFragment extends Fragment
         implements CategoryAdapter.OnMoreClickListener,
-        CategoryAdapter.OnCategoryClickListener{
+        CategoryAdapter.OnCategoryClickListener,
+        VendorAdapter.OnVendorClick{
 
     private static final String TAG = "HomeFragment";
     private FragmentHomeBinding binding;
 
     private HomeViewModel viewModel;
+
     private CategoryAdapter categoryAdapter;
+    private LocationHelper locationHelper;
+
     private VendorListFragment vendorListFragment;
     private List<Object> categories = new ArrayList<>();
     private List<VendorResponse> vendors = new ArrayList<>();
@@ -45,7 +57,25 @@ public class HomeFragment extends Fragment
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        // Khởi tạo LocationHelper
+        locationHelper = new LocationHelper(requireContext());
 
+        // Đăng ký observers cho LiveData
+        locationHelper.getLocationLiveData().observe(this, location -> {
+            if (location != null) {
+                String locationText = "Vĩ độ: " + location.getLatitude() +
+                        "\nKinh độ: " + location.getLongitude();
+                this.location = location;
+                viewModel.loadVendors(location.getLatitude(), location.getLongitude(), 5);
+                Log.d(TAG, "Location updated: " + locationText);
+            }
+        });
+
+        locationHelper.getLocationErrorLiveData().observe(this, error -> {
+            if (error != null) {
+                Log.e(TAG, "Location error: " + error);
+            }
+        });
     }
 
     @Override
@@ -59,8 +89,6 @@ public class HomeFragment extends Fragment
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         viewModel = new ViewModelProvider(this).get(HomeViewModel.class);
-
-        getCurrentLocation();
         setupCategoryRecyclerView();
         setupVendorRecyclerView();
         observeData();
@@ -77,39 +105,6 @@ public class HomeFragment extends Fragment
         binding.rvCategories.setAdapter(categoryAdapter);
     }
 
-    private void getCurrentLocation() {
-        LocationHelper.getCurrentLocation(requireActivity(), new LocationHelper.LocationCallbackInterface() {
-            @Override
-            public void onLocationResult(Location location) {
-                if (location != null) {
-                    HomeFragment.this.location = location;
-                    // Xử lý khi có vị trí
-                    String locationText = String.format(
-                            "Vị trí hiện tại:\n" +
-                                    "- Vĩ độ (Latitude): %.6f\n" +
-                                    "- Kinh độ (Longitude): %.6f\n" +
-                                    "- Độ chính xác: %.1f mét",
-                            location.getLatitude(),
-                            location.getLongitude(),
-                            location.getAccuracy()
-                    );
-                    viewModel.loadVendors(location.getLatitude(), location.getLongitude(), 5);
-                    Log.d(TAG, "Location updated: " + locationText);
-                } else {
-                    Snackbar.make(binding.getRoot(),"Không thể lấy được vị trí!",2000);
-                }
-            }
-
-            @Override
-            public void onLocationError(String error) {
-                // Xử lý khi có lỗi
-                Toast.makeText(requireContext(),
-                        "Lỗi lấy vị trí: " + error, Toast.LENGTH_SHORT).show();
-            }
-        });
-    }
-
-
     private void setupVendorRecyclerView() {
         vendorListFragment = new VendorListFragment();
 
@@ -122,6 +117,8 @@ public class HomeFragment extends Fragment
             public void onClick(View v) {
                 NavController navController = Navigation.findNavController(requireActivity(), R.id.nav_host_fragment);
                 Bundle args = new Bundle();
+                args.putFloat("latitude", (float) location.getLatitude());
+                args.putFloat("longitude", (float) location.getLongitude());
                 args.putFloat("radius", 5F);
                 navController.navigate(R.id.action_home_to_view_all_vendor_nearby, args);
 
@@ -175,6 +172,9 @@ public class HomeFragment extends Fragment
     }
 
     private void loadData() {
+        if (checkLocationPermissions()) {
+            locationHelper.startLocationUpdates();
+        }
         showLoading(true);
         binding.swipeRefresh.setRefreshing(true);
         viewModel.loadCategories();
@@ -206,5 +206,55 @@ public class HomeFragment extends Fragment
         navController.navigate(R.id.action_homeFragment_to_allCategoriesFragment);
 
         Toast.makeText(requireContext(), "Tất cả danh mục", Toast.LENGTH_SHORT).show();
+    }
+    @Override
+    public void onVendorClick(VendorResponse vendor, int position) {
+        Log.d(TAG, "Click on vendor");
+        // Handle vendor click
+    }
+
+    private boolean checkLocationPermissions() {
+        if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED ||
+                ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+
+            // Nếu chưa có quyền, yêu cầu người dùng
+            ActivityCompat.requestPermissions(requireActivity(),
+                    new String[]{
+                            Manifest.permission.ACCESS_FINE_LOCATION,
+                            Manifest.permission.ACCESS_COARSE_LOCATION
+                    }, 1001);
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == 1001) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                // Người dùng đã cấp quyền, tiếp tục lấy vị trí
+                locationHelper.startLocationUpdates();
+            } else {
+                // Người dùng từ chối cấp quyền
+                showPermissionExplanationDialog();
+            }
+        }
+    }
+    private void showPermissionExplanationDialog() {
+        new AlertDialog.Builder(requireContext())
+                .setTitle("Cần quyền truy cập vị trí")
+                .setMessage("Ứng dụng cần quyền truy cập vị trí để hoạt động chính xác. Vui lòng cấp quyền trong cài đặt.")
+                .setPositiveButton("Cài đặt", (dialog, which) -> {
+                    // Mở cài đặt ứng dụng để người dùng cấp quyền thủ công
+                    Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+                    Uri uri = Uri.fromParts("package", null, HomeFragment.TAG);
+                    intent.setData(uri);
+                    startActivity(intent);
+                })
+                .setNegativeButton("Hủy", (dialog, which) ->
+                        Toast.makeText(requireContext(), "Không thể lấy vị trí khi không có quyền", Toast.LENGTH_SHORT).show())
+                .create()
+                .show();
     }
 }

@@ -1,7 +1,12 @@
 package com.example.crabfood.ui.vendor;
 
+import android.Manifest;
+import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.location.Location;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -10,6 +15,9 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.Navigation;
@@ -18,6 +26,7 @@ import com.example.crabfood.R;
 import com.example.crabfood.databinding.FragmentAllVendorNearbyBinding;
 import com.example.crabfood.helpers.KeyboardHelper;
 import com.example.crabfood.helpers.LocationHelper;
+import com.example.crabfood.ui.home.HomeFragment;
 import com.google.android.material.snackbar.Snackbar;
 
 public class AllVendorNearbyFragment extends Fragment {
@@ -25,10 +34,33 @@ public class AllVendorNearbyFragment extends Fragment {
     private FragmentAllVendorNearbyBinding binding;
     private AllVendorNearbyViewModel viewModel;
     private VendorListFragment vendorListFragment;
-    private double latitude;
-    private double longitude;
+    private LocationHelper locationHelper;
     private double radius;
-    private Location location;
+    private double latitue, longitude;
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        locationHelper = new LocationHelper(requireContext());
+
+        // Đăng ký observers cho LiveData
+        locationHelper.getLocationLiveData().observe(this, location -> {
+            if (location != null) {
+                String locationText = "Vĩ độ: " + location.getLatitude() +
+                        "\nKinh độ: " + location.getLongitude();
+                viewModel.loadVendors(location.getLatitude(), location.getLongitude(),
+                        radius, null, null, null,
+                        null, null, null);
+                Log.d(TAG, "Location updated: " + locationText);
+            }
+        });
+
+        locationHelper.getLocationErrorLiveData().observe(this, error -> {
+            if (error != null) {
+                Log.e(TAG, "Location error: " + error);
+            }
+        });
+    }
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
@@ -52,6 +84,7 @@ public class AllVendorNearbyFragment extends Fragment {
         setupToolbar();
         setupRecyclerView();
         setupSearchView();
+        setupSwipeRefresh();
         loadData();
         observe();
     }
@@ -61,7 +94,6 @@ public class AllVendorNearbyFragment extends Fragment {
             @Override
             public void onLocationResult(Location location) {
                 if (location != null) {
-                    AllVendorNearbyFragment.this.location = location;
                     // Xử lý khi có vị trí
                     String locationText = String.format("Vị trí hiện tại:\n" +
                                     "- Vĩ độ (Latitude): %.6f\n" +
@@ -70,10 +102,12 @@ public class AllVendorNearbyFragment extends Fragment {
                             location.getLatitude(),
                             location.getLongitude(),
                             location.getAccuracy());
-                    viewModel.loadVendors(location.getLatitude(), location.getLongitude(), 5, null, null, null, null, null, null);
+                    viewModel.loadVendors(location.getLatitude(), location.getLongitude(),
+                            radius, null, null, null,
+                            null, null, null);
                     Log.d(TAG, "Location updated: " + locationText);
                 } else {
-                    Snackbar.make(binding.getRoot(),"Không thể lấy được vị trí!",Snackbar.LENGTH_SHORT).show();
+                    Snackbar.make(binding.getRoot(), "Không thể lấy được vị trí!", Snackbar.LENGTH_SHORT).show();
                 }
             }
 
@@ -94,9 +128,15 @@ public class AllVendorNearbyFragment extends Fragment {
         );
     }
 
+    private void setupSwipeRefresh() {
+        binding.swipeRefreshLayout.setOnRefreshListener(this::loadData);
+    }
+
     private void loadData() {
-        // Load data
-        viewModel.loadVendors(latitude, longitude, radius, null, null, null, null, null, null);
+        if (checkLocationPermissions()) {
+            locationHelper.startLocationUpdates();
+        }
+        binding.swipeRefreshLayout.setRefreshing(true);
     }
 
     private void observe() {
@@ -105,6 +145,7 @@ public class AllVendorNearbyFragment extends Fragment {
             if (vendorResponses != null) {
                 vendorListFragment.setVendors(vendorResponses);
             }
+            binding.swipeRefreshLayout.setRefreshing(false);
         });
 
         // Observe loading errors
@@ -168,5 +209,50 @@ public class AllVendorNearbyFragment extends Fragment {
     public void onDestroyView() {
         super.onDestroyView();
         binding = null;
+    }
+
+    private boolean checkLocationPermissions() {
+        if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED ||
+                ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+
+            // Nếu chưa có quyền, yêu cầu người dùng
+            ActivityCompat.requestPermissions(requireActivity(),
+                    new String[]{
+                            Manifest.permission.ACCESS_FINE_LOCATION,
+                            Manifest.permission.ACCESS_COARSE_LOCATION
+                    }, 1001);
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == 1001) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                // Người dùng đã cấp quyền, tiếp tục lấy vị trí
+                locationHelper.startLocationUpdates();
+            } else {
+                // Người dùng từ chối cấp quyền
+                showPermissionExplanationDialog();
+            }
+        }
+    }
+    private void showPermissionExplanationDialog() {
+        new AlertDialog.Builder(requireContext())
+                .setTitle("Cần quyền truy cập vị trí")
+                .setMessage("Ứng dụng cần quyền truy cập vị trí để hoạt động chính xác. Vui lòng cấp quyền trong cài đặt.")
+                .setPositiveButton("Cài đặt", (dialog, which) -> {
+                    // Mở cài đặt ứng dụng để người dùng cấp quyền thủ công
+                    Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+                    Uri uri = Uri.fromParts("package", null, AllVendorNearbyFragment.TAG);
+                    intent.setData(uri);
+                    startActivity(intent);
+                })
+                .setNegativeButton("Hủy", (dialog, which) ->
+                        Toast.makeText(requireContext(), "Không thể lấy vị trí khi không có quyền", Toast.LENGTH_SHORT).show())
+                .create()
+                .show();
     }
 }
