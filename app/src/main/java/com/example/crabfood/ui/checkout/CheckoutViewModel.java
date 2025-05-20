@@ -69,6 +69,7 @@ public class CheckoutViewModel extends AndroidViewModel {
     public LiveData<OrderResponse> getPlacedOrder() {
         return placedOrder;
     }
+
     public LiveData<PaymentResponse> getOrderPaymentResponse() {
         return orderPaymentResponse;
     }
@@ -122,7 +123,9 @@ public class CheckoutViewModel extends AndroidViewModel {
         return calculatedFee;
     }
 
-    public void placeOrder(AddressResponse address, Double subtotal, Double total, List<CartItemEntity> cartItems) {
+    public void placeOrder(String recipientName, String recipientPhone,
+                           AddressResponse address, Double subtotal,
+                           Double total, List<CartItemEntity> cartItems) {
         // Validate order parameters
         if (address == null) {
             orderError.setValue("Vui lòng chọn địa chỉ giao hàng");
@@ -155,6 +158,8 @@ public class CheckoutViewModel extends AndroidViewModel {
                 total,
                 selectedPaymentMethod.getValue(),
                 couponCode.getValue(),
+                recipientName,
+                recipientPhone,
                 cartItems
         );
 
@@ -196,6 +201,7 @@ public class CheckoutViewModel extends AndroidViewModel {
     private OrderRequest createOrderRequest(Long vendorId, Long customerId, AddressResponse address,
                                             Double subtotal, Double deliveryFee, Double discountAmount,
                                             Double totalAmount, String paymentMethod, String couponCode,
+                                            String recipientName, String recipientPhone,
                                             List<CartItemEntity> items) {
         OrderRequest request = new OrderRequest();
 
@@ -225,6 +231,10 @@ public class CheckoutViewModel extends AndroidViewModel {
         request.setPaymentMethod(OrderRequest.PaymentMethod.valueOf(paymentMethod.toUpperCase()));
         request.setOrderStatus("PENDING");
         request.setCouponCode(couponCode);
+
+        // recipient
+        request.setRecipientName(recipientName);
+        request.setRecipientPhone(recipientPhone);
 
         // Order items
         request.setItems(items);

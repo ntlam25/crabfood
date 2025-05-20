@@ -42,6 +42,28 @@ public class FoodRepository {
         return data;
     }
 
+    public LiveData<List<FoodResponse>> findByVendorIdAndCategoryId(Long vendorId, Long categoryId){
+        MutableLiveData<List<FoodResponse>> data = new MutableLiveData<>();
+
+        service.findByVendorIdAndCategoryId(vendorId,categoryId).enqueue(new Callback<List<FoodResponse>>() {
+            @Override
+            public void onResponse(Call<List<FoodResponse>> call, Response<List<FoodResponse>> response) {
+                if (response.isSuccessful()) {
+                    data.postValue(response.body());
+                } else {
+                    data.postValue(null);
+                }
+            }
+
+            @Override
+            public void onFailure(Call<List<FoodResponse>> call, Throwable t) {
+                data.postValue(null);
+            }
+        });
+
+        return data;
+    }
+
     public LiveData<List<FoodResponse>> findFeaturedFood(Long vendorId){
         MutableLiveData<List<FoodResponse>> data = new MutableLiveData<>();
 

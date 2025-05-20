@@ -73,7 +73,7 @@ public class OrderRepository {
 
             @Override
             public void onFailure(Call<OrderResponse> call, Throwable t) {
-                callback.onOrderFailure("Lỗi kết nối: " + t.getMessage());
+                callback.onOrderFailure("Lỗi : " + t.getMessage());
             }
         });
     }

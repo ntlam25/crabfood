@@ -123,6 +123,4 @@ dependencies {
 //    implementation("com.mapbox.search:mapbox-search-android-ui:1.0.0-beta.42")
 //    implementation ("com.mapbox.navigation:android:2.15.2")
 //    implementation ("com.mapbox.search:mapbox-search-android-ui:1.0.0-rc.6")
-
-
 }

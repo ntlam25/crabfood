@@ -63,4 +63,17 @@ public class DetailCategoryViewModel extends ViewModel {
             _foods.removeSource(source);
         });
     }
+
+    public void getFoodByVendorIdAndCategoryId(Long vendorId, Long categoryId) {
+        LiveData<List<FoodResponse>> source = foodRepository.findByVendorIdAndCategoryId(vendorId, categoryId);
+
+        _foods.addSource(source, foodResponses -> {
+            if (foodResponses != null) {
+                _foods.postValue(foodResponses);
+            } else {
+                _error.postValue("Tải danh sách thức ăn thất bại");
+            }
+            _foods.removeSource(source);
+        });
+    }
 }

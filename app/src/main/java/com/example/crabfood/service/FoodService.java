@@ -9,6 +9,7 @@ import java.util.List;
 import retrofit2.Call;
 import retrofit2.http.GET;
 import retrofit2.http.Path;
+import retrofit2.http.Query;
 
 public interface FoodService {
     @GET("api/foods")
@@ -28,4 +29,7 @@ public interface FoodService {
 
     @GET("api/foods/popular/{vendorId}")
     Call<List<FoodResponse>> findPopularFoodsByVendorId(@Path("vendorId") long vendorId);
+
+    @GET("api/foods/by")
+    Call<List<FoodResponse>> findByVendorIdAndCategoryId(@Query("vendorId") Long vendorId, @Query("categoryId") Long categoryId);
 }

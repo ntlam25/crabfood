@@ -16,7 +16,7 @@
         app:navigationIcon="@android:drawable/ic_menu_close_clear_cancel"
         app:title="@string/order_tracking" />
 
-    <FrameLayout
+    <com.mapbox.mapboxsdk.maps.MapView
         android:id="@+id/map_container"
         android:layout_width="match_parent"
         android:layout_height="0dp"

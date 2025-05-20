@@ -1,22 +1,20 @@
 package com.example.crabfood.ui.checkout;
 
-import androidx.browser.customtabs.CustomTabsIntent;
-import androidx.lifecycle.ViewModelProvider;
-
 import android.net.Uri;
 import android.os.Bundle;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
-import androidx.navigation.Navigation;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.browser.customtabs.CustomTabsIntent;
+import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
+import androidx.navigation.Navigation;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.crabfood.R;
 import com.example.crabfood.adapter.CartAdapter;
@@ -35,6 +33,7 @@ import com.google.android.material.snackbar.Snackbar;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 
 public class CheckoutFragment extends Fragment implements CartAdapter.CartItemListener {
 
@@ -47,11 +46,9 @@ public class CheckoutFragment extends Fragment implements CartAdapter.CartItemLi
     private MenuCheckoutAdapter menuCheckoutAdapter;
     private VendorResponse vendor;
     private Long vendorId;
-    private Double subTotal;
-    private Double total;
-    private Double deliveryFee;
+    private Double total, subTotal, deliveryFee;
+    private String recipientName, recipientPhone;
     private AddressViewModel sharedAddressViewModel;
-
     private AddressResponse address;
     private List<CartItemEntity> cartItemEntities;
 
@@ -89,20 +86,32 @@ public class CheckoutFragment extends Fragment implements CartAdapter.CartItemLi
     private boolean validateOrder() {
         if (address == null) {
             Toast.makeText(requireContext(), "Vui lòng chọn địa chỉ giao hàng", Toast.LENGTH_SHORT).show();
-            Snackbar.make(requireContext(),binding.getRoot(), "Vui lòng chọn địa chỉ giao hàng", Toast.LENGTH_SHORT).show();
+            Snackbar.make(requireContext(), binding.getRoot(), "Vui lòng chọn địa chỉ giao hàng", Toast.LENGTH_SHORT).show();
             return false;
         }
 
         if (subTotal == null || subTotal <= 0) {
             Toast.makeText(requireContext(), "Giỏ hàng của bạn đang trống", Toast.LENGTH_SHORT).show();
-            Snackbar.make(requireContext(),binding.getRoot(),"Giỏ hàng của bạn đang trống", Toast.LENGTH_SHORT).show();
+            Snackbar.make(requireContext(), binding.getRoot(), "Giỏ hàng của bạn đang trống", Toast.LENGTH_SHORT).show();
             return false;
         }
 
         // Kiểm tra xem đã chọn phương thức thanh toán chưa
         if (viewModel.getSelectedPaymentMethod().getValue() == null) {
             Toast.makeText(requireContext(), "Vui lòng chọn phương thức thanh toán", Toast.LENGTH_SHORT).show();
-            Snackbar.make(requireContext(),binding.getRoot(),"Vui lòng chọn phương thức thanh toán", Toast.LENGTH_SHORT).show();
+            Snackbar.make(requireContext(), binding.getRoot(), "Vui lòng chọn phương thức thanh toán", Toast.LENGTH_SHORT).show();
+            return false;
+        }
+        recipientName = binding.editTextRecipientName.getText().toString().trim();
+        recipientPhone = binding.editTextRecipientPhone.getText().toString().trim();
+
+        if (recipientName.isEmpty()) {
+            binding.editTextRecipientName.setError("Vui lòng nhập tên người nhận");
+            return false;
+        }
+
+        if (recipientPhone.isEmpty() || recipientPhone.length() < 9) {
+            binding.editTextRecipientPhone.setError("Số điện thoại không hợp lệ");
             return false;
         }
 
@@ -116,7 +125,8 @@ public class CheckoutFragment extends Fragment implements CartAdapter.CartItemLi
                 .setMessage("Bạn có chắc chắn muốn đặt đơn hàng này?")
                 .setPositiveButton("Đặt hàng", (dialog, which) -> {
                     // Gửi yêu cầu đặt hàng đến ViewModel
-                    viewModel.placeOrder(address, subTotal, total, cartItemEntities);
+                    viewModel.placeOrder(recipientName, recipientPhone,
+                            address, subTotal, total, cartItemEntities);
                 })
                 .setNegativeButton("Hủy", null)
                 .show();
@@ -125,19 +135,19 @@ public class CheckoutFragment extends Fragment implements CartAdapter.CartItemLi
     private void calculateTotalOrder() {
         if (subTotal != null && deliveryFee != null) {
             // Lấy giá trị giảm giá từ ViewModel (nếu có)
-            Double discountAmount = viewModel.getDiscountAmount().getValue() != null ?
+            double discountAmount = viewModel.getDiscountAmount().getValue() != null ?
                     viewModel.getDiscountAmount().getValue() : 0.0;
 
             // Tính tổng tiền sau khi trừ giảm giá
             total = subTotal + deliveryFee - discountAmount;
-            binding.textViewTotal.setText(String.format("%,.0f đ", total));
-            binding.textViewBottomTotal.setText(String.format("%,.0f đ", total));
+            binding.textViewTotal.setText(String.format(Locale.getDefault(), "%,.0f đ", total));
+            binding.textViewBottomTotal.setText(String.format(Locale.getDefault(), "%,.0f đ", total));
 
             // Hiển thị giảm giá nếu có
             if (discountAmount > 0) {
                 binding.textViewDiscount.setVisibility(View.VISIBLE);
 //                binding.textViewDiscountLabel.setVisibility(View.VISIBLE);
-                binding.textViewDiscount.setText(String.format("-%,.0f đ", discountAmount));
+                binding.textViewDiscount.setText(String.format(Locale.getDefault(), "-%,.0f đ", discountAmount));
             } else {
                 binding.textViewDiscount.setVisibility(View.GONE);
 //                binding.textViewDiscountLabel.setVisibility(View.GONE);
@@ -160,7 +170,7 @@ public class CheckoutFragment extends Fragment implements CartAdapter.CartItemLi
                                 vendor.getServiceRadiusKm(),
                                 false
                         );
-                        binding.textViewDeliveryFee.setText(String.format("%,.0f đ", deliveryFee));
+                        binding.textViewDeliveryFee.setText(String.format(Locale.getDefault(), "%,.0f đ", deliveryFee));
                         calculateTotalOrder();
                     }
                 });
@@ -174,7 +184,7 @@ public class CheckoutFragment extends Fragment implements CartAdapter.CartItemLi
 
         cartViewModel.getTotalPrice().observe(getViewLifecycleOwner(), totalPrice -> {
             subTotal = totalPrice;
-            binding.textViewSubtotal.setText(String.format("%,.0f đ", totalPrice));
+            binding.textViewSubtotal.setText(String.format(Locale.getDefault(), "%,.0f đ", totalPrice));
             calculateTotalOrder();
         });
 
@@ -202,9 +212,7 @@ public class CheckoutFragment extends Fragment implements CartAdapter.CartItemLi
         });
 
         // Observe discount amount changes
-        viewModel.getDiscountAmount().observe(getViewLifecycleOwner(), discount -> {
-            calculateTotalOrder();
-        });
+        viewModel.getDiscountAmount().observe(getViewLifecycleOwner(), discount -> calculateTotalOrder());
 
         // Observe Order State for handling the order process
         viewModel.getOrderState().observe(getViewLifecycleOwner(), orderState -> {
@@ -251,6 +259,7 @@ public class CheckoutFragment extends Fragment implements CartAdapter.CartItemLi
             }
         });
     }
+
     private void openPaymentUrl(String url) {
         CustomTabsIntent intent = new CustomTabsIntent.Builder().build();
         intent.launchUrl(requireContext(), Uri.parse(url));

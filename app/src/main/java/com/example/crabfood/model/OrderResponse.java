@@ -36,7 +36,8 @@ public class OrderResponse implements Serializable {
     private Long couponId;
     private String estimatedDeliveryTime;
     private String actualDeliveryTime;
-    private String customerName;
+    private String recipientName;
+    private String recipientPhone;
     @SerializedName("items")
     private List<OrderFood> orderFoods = new ArrayList<>();
 
@@ -213,6 +214,30 @@ public class OrderResponse implements Serializable {
         this.actualDeliveryTime = actualDeliveryTime;
     }
 
+    public VendorResponse getVendorResponse() {
+        return vendorResponse;
+    }
+
+    public void setVendorResponse(VendorResponse vendorResponse) {
+        this.vendorResponse = vendorResponse;
+    }
+
+    public String getRecipientName() {
+        return recipientName;
+    }
+
+    public void setRecipientName(String recipientName) {
+        this.recipientName = recipientName;
+    }
+
+    public String getRecipientPhone() {
+        return recipientPhone;
+    }
+
+    public void setRecipientPhone(String recipientPhone) {
+        this.recipientPhone = recipientPhone;
+    }
+
     public List<OrderFood> getOrderFoods() {
         return orderFoods;
     }
@@ -242,11 +267,4 @@ public class OrderResponse implements Serializable {
         this.orderFoods = orderFoods;
     }
 
-    public String getCustomerName() {
-        return customerName;
-    }
-
-    public void setCustomerName(String customerName) {
-        this.customerName = customerName;
-    }
 }

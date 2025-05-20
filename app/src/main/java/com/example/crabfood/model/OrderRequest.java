@@ -19,6 +19,8 @@ public class OrderRequest {
     private PaymentMethod paymentMethod;
     private String orderStatus;
     private String couponCode;
+    private String recipientName;
+    private String recipientPhone;
     private List<CartItemEntity> items;
 
     // Enum for payment methods
@@ -35,31 +37,6 @@ public class OrderRequest {
         public String getValue() {
             return value;
         }
-    }
-
-    // Nested class for order items
-    public static class OrderItemRequest {
-        private Long id;
-        private Long foodId;
-        private String foodName;
-        private String imageUrl;
-        private Double price;
-        private Integer quantity;
-        private Long vendorId;
-        private List<OptionChoiceResponse> selectedOptions;
-
-        // Constructors, getters, and setters
-        public OrderItemRequest() {}
-
-        // Add getters and setters
-        public Long getFoodId() { return foodId; }
-        public void setFoodId(Long foodId) { this.foodId = foodId; }
-        public String getFoodName() { return foodName; }
-        public void setFoodName(String foodName) { this.foodName = foodName; }
-        public Double getPrice() { return price; }
-        public void setPrice(Double price) { this.price = price; }
-        public Integer getQuantity() { return quantity; }
-        public void setQuantity(Integer quantity) { this.quantity = quantity; }
     }
 
     // Constructors
@@ -163,5 +140,21 @@ public class OrderRequest {
 
     public void setCouponCode(String couponCode) {
         this.couponCode = couponCode;
+    }
+
+    public String getRecipientName() {
+        return recipientName;
+    }
+
+    public void setRecipientName(String recipientName) {
+        this.recipientName = recipientName;
+    }
+
+    public String getRecipientPhone() {
+        return recipientPhone;
+    }
+
+    public void setRecipientPhone(String recipientPhone) {
+        this.recipientPhone = recipientPhone;
     }
 }

@@ -20,9 +20,12 @@
         android:usesCleartextTraffic="true"
         tools:targetApi="31">
         <activity
+            android:name=".ui.order.OrderTrackingActivity"
+            android:exported="false" />
+        <activity
             android:name=".ui.address.AddAddressActivity"
             android:exported="false"
-            android:windowSoftInputMode="adjustPan|stateHidden"/>
+            android:windowSoftInputMode="adjustPan|stateHidden" />
         <activity
             android:name=".ui.auth.RegisterActivity"
             android:exported="false" />
@@ -38,7 +41,10 @@
 
                 <category android:name="android.intent.category.BROWSABLE" />
                 <category android:name="android.intent.category.DEFAULT" />
-                <data android:scheme="crabfood" android:host="payment-result"/>
+
+                <data
+                    android:host="payment-result"
+                    android:scheme="crabfood" />
             </intent-filter>
         </activity>
         <activity
@@ -46,6 +52,7 @@
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>

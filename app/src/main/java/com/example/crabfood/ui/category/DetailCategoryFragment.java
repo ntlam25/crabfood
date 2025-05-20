@@ -45,11 +45,9 @@ public class DetailCategoryFragment extends Fragment
 
     private CategoryResponse category;
     private long categoryId;
+    private Long vendorId;
     private String categoryName;
 
-    public static DetailCategoryFragment newInstance() {
-        return new DetailCategoryFragment();
-    }
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
@@ -68,6 +66,7 @@ public class DetailCategoryFragment extends Fragment
         // Get categoryId and categoryName from arguments
         if (getArguments() != null) {
             categoryId = getArguments().getLong("categoryId", 1L);
+            vendorId = getArguments().getLong("vendorId", 0L);
             categoryName = getArguments().getString("categoryName", "Food");
         }
         // Setup RecyclerView
@@ -94,7 +93,11 @@ public class DetailCategoryFragment extends Fragment
     private void loadData() {
         // Load data
         viewModel.getCategoryById(categoryId);
-        viewModel.getFoodByCategoryId(categoryId);
+        if (vendorId != null && vendorId != 0L) {
+            viewModel.getFoodByVendorIdAndCategoryId(vendorId, categoryId);
+        } else {
+            viewModel.getFoodByCategoryId(categoryId);
+        }
     }
 
     private void observe() {

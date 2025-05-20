@@ -174,6 +174,7 @@ public class VendorDetailFragment extends Fragment
         NavController navController = Navigation.findNavController(requireActivity(), R.id.nav_host_fragment);
         Bundle args = new Bundle();
         args.putLong("categoryId", categoryId);
+        args.putLong("vendorId", vendorId);
         args.putString("categoryName", categoryName);
         navController.navigate(R.id.action_to_detail_category, args);
     }
