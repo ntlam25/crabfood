@@ -5,7 +5,6 @@
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />
 
     <application
         android:name=".CrabFoodApplication"
@@ -22,7 +21,8 @@
         tools:targetApi="31">
         <activity
             android:name=".ui.address.AddAddressActivity"
-            android:exported="false" />
+            android:exported="false"
+            android:windowSoftInputMode="adjustPan|stateHidden"/>
         <activity
             android:name=".ui.auth.RegisterActivity"
             android:exported="false" />
@@ -48,7 +48,11 @@
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-        </activity> <!-- Mapbox dependency -->
+        </activity>
+
+        <meta-data
+            android:name="vn.goong.android.maps.API_KEY"
+            android:value="@string/goong_api_key" />
         <meta-data
             android:name="com.mapbox.token"
             android:value="@string/mapbox_access_token" />

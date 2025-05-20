@@ -19,20 +19,25 @@ public class AddressViewModel extends ViewModel {
     private final AddressRepository repository;
 
     private final MutableLiveData<AddressResponse> selectedAddress = new MutableLiveData<>();
+    private final MutableLiveData<AddressResponse> createdAddress = new MutableLiveData<>();
     private final MediatorLiveData<Resource<List<AddressResponse>>> _addresses = new MediatorLiveData<>();
-
+    private final MutableLiveData<String> _error = new MutableLiveData<>();
     public AddressViewModel() {
         repository = new AddressRepository();
     }
 
-    public LiveData<Resource<AddressResponse>> createAddress(AddressRequest request) {
-        return repository.createAddress(request);
+    public LiveData<String> getError() {
+        return _error;
+    }
+
+    public LiveData<AddressResponse> getAddressCreated(){
+        return createdAddress;
     }
 
     public LiveData<Resource<List<AddressResponse>>> getUserAddresses() {
         LiveData<Resource<List<AddressResponse>>> source = repository.getUserAddresses();
         _addresses.addSource(source, resource -> {
-            Log.d(TAG, "LiveData emitted with status: " + resource.getStatus());
+            Log.d(TAG, "getUserAddresses: " + resource.getStatus());
 
             if (resource.getStatus() == Resource.Status.SUCCESS && resource.getData() != null) {
                 // Tìm địa chỉ mặc định
@@ -51,6 +56,19 @@ public class AddressViewModel extends ViewModel {
             _addresses.removeSource(source);
         });
         return source;
+    }
+    public void addAddress(AddressRequest request) {
+        repository.createAddress(request, new AddressRepository.AddressCallback() {
+            @Override
+            public void onSuccess(AddressResponse response) {
+                createdAddress.postValue(response);
+            }
+
+            @Override
+            public void onFailure(String message) {
+                _error.postValue(message);
+            }
+        });
     }
 
     public LiveData<AddressResponse> getSelectedAddress() {

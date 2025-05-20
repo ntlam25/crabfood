@@ -102,15 +102,25 @@ dependencies {
 
     implementation("androidx.concurrent:concurrent-futures:1.1.0")
 
+    // Mapbox SDK
+//    implementation("com.mapbox.maps:android:10.13.0")
+    implementation("com.mapbox.mapboxsdk:mapbox-android-sdk:9.6.2")
+
+    // Goong Maps SDK (via JitPack)
+//    implementation("com.github.goong-io:goong-map-android-sdk:1.5@aar")
+
+    // Location components
+//    implementation("com.mapbox.mapboxsdk:mapbox-android-core:3.1.0")
+    implementation("com.mapbox.mapboxsdk:mapbox-android-plugin-places-v9:0.12.0")
 
     // search mapbox
 //    implementation("com.mapbox.search:autofill:2.12.0-beta.1")
 //    implementation("com.mapbox.search:discover:2.12.0-beta.1")
 //    implementation("com.mapbox.search:place-autocomplete:2.12.0-beta.1")
 //    implementation("com.mapbox.search:offline:2.12.0-beta.1")
-    implementation("com.mapbox.maps:android:10.16.1")
-    implementation("com.mapbox.search:mapbox-search-android:1.0.0-beta.42")
-    implementation("com.mapbox.search:mapbox-search-android-ui:1.0.0-beta.42")
+//    implementation("com.mapbox.maps:android:10.16.1")
+//    implementation("com.mapbox.search:mapbox-search-android:1.0.0-beta.42")
+//    implementation("com.mapbox.search:mapbox-search-android-ui:1.0.0-beta.42")
 //    implementation ("com.mapbox.navigation:android:2.15.2")
 //    implementation ("com.mapbox.search:mapbox-search-android-ui:1.0.0-rc.6")
 

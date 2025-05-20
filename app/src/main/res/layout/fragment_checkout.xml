@@ -30,6 +30,67 @@
             android:layout_height="wrap_content"
             android:paddingBottom="16dp">
 
+            <!-- Recipient Name -->
+            <TextView
+                android:id="@+id/labelRecipientName"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:layout_marginStart="16dp"
+                android:text="Tên người nhận"
+                android:textStyle="bold"
+                android:textColor="@color/black"
+                android:textSize="16sp"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintStart_toStartOf="parent" />
+
+            <EditText
+                android:id="@+id/editTextRecipientName"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="16dp"
+                android:layout_marginTop="4dp"
+                android:background="@drawable/rounded_white_background"
+                android:hint="Nhập tên người nhận"
+                android:padding="12dp"
+                android:elevation="8dp"
+                android:textColor="@color/black"
+                android:textSize="16sp"
+                app:layout_constraintTop_toBottomOf="@id/labelRecipientName"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent" />
+
+            <!-- Recipient Phone -->
+            <TextView
+                android:id="@+id/labelRecipientPhone"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:layout_marginStart="16dp"
+                android:textStyle="bold"
+                android:text="Số điện thoại"
+                android:textColor="@color/black"
+                android:textSize="16sp"
+                app:layout_constraintTop_toBottomOf="@id/editTextRecipientName"
+                app:layout_constraintStart_toStartOf="parent" />
+
+            <EditText
+                android:id="@+id/editTextRecipientPhone"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="16dp"
+                android:layout_marginTop="4dp"
+                android:background="@drawable/rounded_white_background"
+                android:hint="Nhập số điện thoại"
+                android:inputType="phone"
+                android:maxLength="10"
+                android:padding="12dp"
+                android:elevation="8dp"
+                android:textColor="@color/black"
+                android:textSize="16sp"
+                app:layout_constraintTop_toBottomOf="@id/labelRecipientPhone"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent" />
             <!-- Order Summary Header -->
             <TextView
                 android:id="@+id/textViewOrderSummary"
@@ -42,7 +103,7 @@
                 android:textSize="18sp"
                 android:textStyle="bold"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintTop_toBottomOf="@id/editTextRecipientPhone" />
 
             <!-- Add Items Button -->
             <com.google.android.material.button.MaterialButton

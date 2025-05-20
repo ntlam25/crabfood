@@ -1,83 +1,65 @@
 package com.example.crabfood.model;
 
 public class AddressRequest {
-    private String addressName;
-    private String fullAddress;
-    private Double latitude;
-    private Double longitude;
-    private Boolean isDefault;
-    private String recipientName;
-    private String recipientPhone;
+    private String label;
 
+    private String fullAddress;
+
+    private double latitude;
+
+    private double longitude;
+    private boolean isDefault = false;
     public AddressRequest() {
+        isDefault = false;
     }
 
-    public AddressRequest(String fullAddress, String addressName, String district,
-                          String ward, Double latitude, Double longitude,
-                          Boolean isDefault, String recipientName,
-                          String recipientPhone) {
+    public AddressRequest(String label, String fullAddress,
+                          double latitude, double longitude,
+                        boolean isDefault) {
+        this.label = label;
         this.fullAddress = fullAddress;
-        this.addressName = addressName;
         this.latitude = latitude;
         this.longitude = longitude;
         this.isDefault = isDefault;
-        this.recipientName = recipientName;
-        this.recipientPhone = recipientPhone;
     }
 
-    public String getAddressName() {
-        return addressName;
+    public String getLabel() {
+        return label;
     }
 
-    public void setAddressName(String addressName) {
-        this.addressName = addressName;
+    public void setLabel(String label) {
+        this.label = label;
     }
 
     public String getFullAddress() {
         return fullAddress;
     }
 
-    public void setFullAddress(String city) {
-        this.fullAddress = city;
+    public void setFullAddress(String fullAddress) {
+        this.fullAddress = fullAddress;
     }
 
-    public Double getLatitude() {
+    public double getLatitude() {
         return latitude;
     }
 
-    public void setLatitude(Double latitude) {
+    public void setLatitude(double latitude) {
         this.latitude = latitude;
     }
 
-    public Double getLongitude() {
+    public double getLongitude() {
         return longitude;
     }
 
-    public void setLongitude(Double longitude) {
+    public void setLongitude(double longitude) {
         this.longitude = longitude;
     }
 
-    public Boolean getDefault() {
+    public boolean isDefault() {
         return isDefault;
     }
 
-    public void setDefault(Boolean aDefault) {
+    public void setDefault(boolean aDefault) {
         isDefault = aDefault;
-    }
-
-    public String getRecipientName() {
-        return recipientName;
-    }
-
-    public void setRecipientName(String recipientName) {
-        this.recipientName = recipientName;
-    }
-
-    public String getRecipientPhone() {
-        return recipientPhone;
-    }
-
-    public void setRecipientPhone(String recipientPhone) {
-        this.recipientPhone = recipientPhone;
     }
 }

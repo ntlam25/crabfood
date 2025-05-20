@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@android:color/transparent"
     tools:context=".ui.address.AddAddressActivity">
 
     <!-- Thanh tìm kiếm -->
@@ -12,9 +13,9 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_margin="16dp"
+        android:backgroundTint="@color/white"
         app:cardCornerRadius="8dp"
         app:cardElevation="4dp"
-        android:backgroundTint="@color/white"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
@@ -56,31 +57,35 @@
                 android:visibility="gone" />
         </LinearLayout>
     </com.google.android.material.card.MaterialCardView>
-    <com.mapbox.search.ui.view.SearchResultsView
-        android:id="@+id/searchResultAddress"
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recycler_view"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_below="@+id/searchCardView"
-        android:layout_marginTop="16dp"
-        android:paddingTop="8dp"
-        android:visibility="gone"
-        android:paddingBottom="22dp"/>
+        android:layout_height="wrap_content"
+        android:layout_below="@id/searchCardView"
+        android:layout_marginHorizontal="16dp"
+        android:layout_marginTop="1dp"
+        android:elevation="16dp"
+        android:translationZ="99dp"
+        android:background="@color/white"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/searchCardView" />
     <!-- Map View -->
-    <com.mapbox.maps.MapView
+    <com.mapbox.mapboxsdk.maps.MapView
         android:id="@+id/mapView"
         android:layout_width="0dp"
         android:layout_height="0dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/searchCardView" />
+        app:layout_constraintTop_toTopOf="parent" />
     <!-- Marker tại vị trí giữa bản đồ -->
     <ImageView
         android:id="@+id/centerMarker"
         android:layout_width="48dp"
         android:layout_height="48dp"
         android:layout_gravity="center"
-        android:src="@drawable/ic_location"
         app:layout_constraintBottom_toBottomOf="@id/mapView"
         app:layout_constraintEnd_toEndOf="@id/mapView"
         app:layout_constraintStart_toStartOf="@id/mapView"
@@ -93,46 +98,69 @@
         android:layout_height="wrap_content"
         android:layout_margin="16dp"
         android:src="@drawable/ic_target_lcoation"
-        app:layout_constraintBottom_toTopOf="@id/addressInfoCard"
+        app:layout_constraintBottom_toTopOf="@id/locationContainer"
         app:layout_constraintEnd_toEndOf="parent" />
 
 
-    <!-- Card hiển thị thông tin địa chỉ -->
-    <com.google.android.material.card.MaterialCardView
-        android:id="@+id/addressInfoCard"
-        android:layout_width="0dp"
+    <LinearLayout
+        android:id="@+id/locationContainer"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="16dp"
-        app:cardCornerRadius="8dp"
-        app:cardElevation="4dp"
-        android:backgroundTint="@color/white"
+        android:layout_marginHorizontal="16dp"
+        android:orientation="vertical"
         app:layout_constraintBottom_toTopOf="@+id/saveAddressFab"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent">
 
-        <LinearLayout
+        <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:padding="16dp">
+            android:layout_marginBottom="16dp">
 
-            <TextView
-                android:id="@+id/addressText"
+            <!-- EditText Tên địa chỉ -->
+            <EditText
+                android:id="@+id/etLocationName"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textSize="14sp"
-                tools:text="123 Nguyễn Văn Linh, Quận 7, TP.HCM" />
+                android:background="@drawable/rounded_white_background"
+                android:elevation="4dp"
+                android:hint="Tên địa chỉ của bạn"
+                android:paddingEnd="64dp"
+                android:padding="16dp" />
 
-            <TextView
-                android:id="@+id/coordinatesText"
-                android:layout_width="match_parent"
+            <!-- CheckBox đặt làm mặc định -->
+            <CheckBox
+                android:id="@+id/checkboxDefaultAddress"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
+                android:tooltipText="Mặc định"
+                android:elevation="4dp"
                 android:textSize="12sp"
-                android:textStyle="italic"
-                tools:text="10.7553, 106.6658" />
-        </LinearLayout>
-    </com.google.android.material.card.MaterialCardView>
+                android:background="@color/white"
+                android:layout_gravity="end|center_vertical"
+                android:layout_marginEnd="8dp" />
+        </FrameLayout>
+
+        <!-- Location input with icon -->
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            android:background="@drawable/rounded_white_background"
+            android:elevation="4dp"
+            android:padding="8dp">
+
+            <TextView
+                android:id="@+id/etLocation"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@null"
+                android:drawableEnd="@drawable/ic_location_pin"
+                android:focusable="false"
+                android:hint="Địa chỉ của bạn"
+                android:padding="8dp" />
+        </FrameLayout>
+    </LinearLayout>
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/saveAddressFab"

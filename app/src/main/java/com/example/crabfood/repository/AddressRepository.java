@@ -27,27 +27,28 @@ public class AddressRepository {
         service = ApiUtils.getAddressService();
     }
 
-    public LiveData<Resource<AddressResponse>> createAddress(AddressRequest request) {
-        MutableLiveData<Resource<AddressResponse>> result = new MutableLiveData<>();
-        result.setValue(Resource.loading(null));
-
-        service.createAddress(request).enqueue(new Callback<AddressResponse>() {
+    public void createAddress(AddressRequest request, AddressCallback callback) {
+        Call<AddressResponse> call = service.createAddress(request);
+        call.enqueue(new Callback<AddressResponse>() {
             @Override
             public void onResponse(Call<AddressResponse> call, Response<AddressResponse> response) {
                 if (response.isSuccessful() && response.body() != null) {
-                    result.setValue(Resource.success(response.body()));
+                    callback.onSuccess(response.body());
                 } else {
-                    result.setValue(Resource.error("Tạo địa chỉ thất bại", null));
+                    callback.onFailure("Lỗi: " + response.code());
                 }
             }
 
             @Override
             public void onFailure(Call<AddressResponse> call, Throwable t) {
-                result.setValue(Resource.error(t.getMessage(), null));
+                callback.onFailure(t.getMessage());
             }
         });
+    }
 
-        return result;
+    public interface AddressCallback {
+        void onSuccess(AddressResponse response);
+        void onFailure(String message);
     }
 
     public LiveData<Resource<List<AddressResponse>>> getUserAddresses() {

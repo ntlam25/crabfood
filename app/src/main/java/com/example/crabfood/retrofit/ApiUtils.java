@@ -5,12 +5,13 @@ import com.example.crabfood.service.AuthService;
 import com.example.crabfood.service.CartService;
 import com.example.crabfood.service.CategoryService;
 import com.example.crabfood.service.FoodService;
+import com.example.crabfood.service.GoongGeocodeService;
 import com.example.crabfood.service.OrderService;
 import com.example.crabfood.service.UserService;
 import com.example.crabfood.service.VendorService;
 
 public class ApiUtils {
-    public static final String BASE_URL = "http://10.0.2.2:8080/";
+    public static final String BASE_URL = "http://192.168.1.3:8080/";
     public static FoodService getFoodService()
     {
         return RetrofitClient.getClient(BASE_URL).create(FoodService.class);

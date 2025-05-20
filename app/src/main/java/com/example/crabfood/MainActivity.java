@@ -20,6 +20,7 @@ import androidx.navigation.fragment.NavHostFragment;
 import androidx.navigation.ui.NavigationUI;
 
 import com.example.crabfood.databinding.ActivityMainBinding;
+import com.example.crabfood.ui.address.AddressViewModel;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
@@ -33,6 +34,7 @@ public class MainActivity extends AppCompatActivity {
     private ActivityMainBinding binding;
     private long backPressedTime = 0;
     private Toast toast;
+    private AddressViewModel addressViewModel;
     private FusedLocationProviderClient fusedLocationClient;
     // Danh sách 5 ID fragment cần hiển thị Bottom Navigation
     private final Set<Integer> fragmentsWithBottomNav = new HashSet<>(Arrays.asList(
@@ -47,6 +49,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         binding = ActivityMainBinding.inflate(getLayoutInflater());
+
 
         Uri data = getIntent().getData();
         if (data != null && "crabfood".equals(data.getScheme())) {

@@ -95,6 +95,7 @@ public class FoodListFragment extends Fragment
                 Log.d(TAG, "setupRecyclerView: " + foods.size());
                 binding.tvNoFoods.setVisibility(View.GONE);
             } else {
+                binding.recyclerView.setVisibility(View.GONE);
                 binding.tvNoFoods.setVisibility(View.VISIBLE);
             }
         });
