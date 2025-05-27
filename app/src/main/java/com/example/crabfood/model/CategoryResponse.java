@@ -1,5 +1,7 @@
 package com.example.crabfood.model;
 
+import com.google.gson.annotations.SerializedName;
+
 import java.io.Serializable;
 import java.util.List;
 
@@ -13,6 +15,7 @@ public class CategoryResponse implements Serializable {
     private int displayOrder;
     private boolean isActive;
 
+    @SerializedName("foods")
     private List<FoodResponse> foods;       // Danh sách món ăn thuộc category
 
     // Constructors

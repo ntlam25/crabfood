@@ -26,10 +26,12 @@ import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.GridLayoutManager;
 
 import com.example.crabfood.R;
+import com.example.crabfood.adapter.AllCategoryAdapter;
 import com.example.crabfood.adapter.CategoryAdapter;
 import com.example.crabfood.adapter.VendorAdapter;
 import com.example.crabfood.databinding.FragmentHomeBinding;
 import com.example.crabfood.helpers.LocationHelper;
+import com.example.crabfood.model.CategoryResponse;
 import com.example.crabfood.model.VendorResponse;
 import com.example.crabfood.ui.vendor.VendorListFragment;
 
@@ -37,20 +39,19 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class HomeFragment extends Fragment
-        implements CategoryAdapter.OnMoreClickListener,
-        CategoryAdapter.OnCategoryClickListener,
-        VendorAdapter.OnVendorClick{
+        implements
+        CategoryAdapter.OnCategoryClickListener{
 
     private static final String TAG = "HomeFragment";
     private FragmentHomeBinding binding;
 
     private HomeViewModel viewModel;
 
-    private CategoryAdapter categoryAdapter;
+    private AllCategoryAdapter categoryAdapter;
     private LocationHelper locationHelper;
 
     private VendorListFragment vendorListFragment;
-    private List<Object> categories = new ArrayList<>();
+    private List<CategoryResponse> categories = new ArrayList<>();
     private List<VendorResponse> vendors = new ArrayList<>();
     private Location location;
 
@@ -99,10 +100,19 @@ public class HomeFragment extends Fragment
     }
 
     private void setupCategoryRecyclerView() {
-        categoryAdapter = new CategoryAdapter(categories, this::onCategoryClick, this::onMoreClick);
+        categoryAdapter = new AllCategoryAdapter(categories, this::onCategoryClick);
         GridLayoutManager layoutManager = new GridLayoutManager(getContext(), 4);
         binding.rvCategories.setLayoutManager(layoutManager);
         binding.rvCategories.setAdapter(categoryAdapter);
+
+        binding.tvAllCategories.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                NavController navController = Navigation.findNavController(requireActivity(), R.id.nav_host_fragment);
+                navController.navigate(R.id.action_homeFragment_to_allCategoriesFragment);
+                Toast.makeText(requireContext(), "Tất cả danh mục", Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     private void setupVendorRecyclerView() {
@@ -198,19 +208,6 @@ public class HomeFragment extends Fragment
         args.putLong("categoryId", categoryId);
         args.putString("categoryName", categoryName);
         navController.navigate(R.id.action_to_detail_category, args);
-    }
-
-    @Override
-    public void onMoreClick() {
-        NavController navController = Navigation.findNavController(requireActivity(), R.id.nav_host_fragment);
-        navController.navigate(R.id.action_homeFragment_to_allCategoriesFragment);
-
-        Toast.makeText(requireContext(), "Tất cả danh mục", Toast.LENGTH_SHORT).show();
-    }
-    @Override
-    public void onVendorClick(VendorResponse vendor, int position) {
-        Log.d(TAG, "Click on vendor");
-        // Handle vendor click
     }
 
     private boolean checkLocationPermissions() {

@@ -154,6 +154,14 @@
                             android:layout_weight="1"
                             android:text="@string/categories"
                             android:textAppearance="@style/TextAppearance.App.Headline2" />
+                        <TextView
+                            android:id="@+id/tv_all_categories"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:padding="4dp"
+                            android:text="@string/view_all"
+                            android:textAppearance="@style/TextAppearance.App.Body1"
+                            android:textColor="@color/colorPrimary" />
 
                     </LinearLayout>
 

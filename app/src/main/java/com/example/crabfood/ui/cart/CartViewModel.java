@@ -2,6 +2,8 @@ package com.example.crabfood.ui.cart;
 
 import android.app.Application;
 import android.content.Context;
+import android.util.Log;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
@@ -12,17 +14,21 @@ import androidx.lifecycle.Transformations;
 import com.example.crabfood.model.CartItemEntity;
 import com.example.crabfood.model.FoodResponse;
 import com.example.crabfood.model.OptionChoiceResponse;
+import com.example.crabfood.model.OrderResponse;
 import com.example.crabfood.repository.CartRepository;
 
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public class CartViewModel extends AndroidViewModel {
+    private static final String TAG = "CartViewModel";
     private final CartRepository cartRepository;
     private final LiveData<List<CartItemEntity>> cartItems;
     private final MediatorLiveData<Double> totalPrice = new MediatorLiveData<>();
     private final MediatorLiveData<Long> currentVendorId = new MediatorLiveData<>();
     private final LiveData<Boolean> isCartEmpty;
+    private Long vendorId;
 
     public CartViewModel(@NonNull Application application) {
         super(application);
@@ -74,6 +80,10 @@ public class CartViewModel extends AndroidViewModel {
         return cartRepository.addToCart(context, food, quantity, selectedOptions);
     }
 
+    public boolean reOrder(Context context, OrderResponse orderResponse) {
+        return cartRepository.reorder(context, orderResponse);
+    }
+
     public void refreshCartData() {
         cartRepository.getAllCartItems();
     }
@@ -89,5 +99,7 @@ public class CartViewModel extends AndroidViewModel {
     public void clearCart() {
         cartRepository.clearCart();
     }
+
+
 
 }

@@ -36,10 +36,10 @@ public class HomeRepository {
             public void onResponse(Call<List<CategoryResponse>> call, Response<List<CategoryResponse>> response) {
                 if (response.isSuccessful()) {
                     Log.d("API_RESPONSE", "Categories count: " + response.body().size());
-                    List<CategoryResponse> firstSeven = response.body().size() > 7
-                            ? response.body().subList(0, 7)
+                    List<CategoryResponse> categories = response.body().size() > 8
+                            ? response.body().subList(0, 8)
                             : response.body();
-                    data.postValue(firstSeven);
+                    data.postValue(categories);
                 } else {
                     Log.e("API_RESPONSE", "Response error code: " + response.code());
                     data.postValue(new ArrayList<>()); // trả về danh sách rỗng nếu lỗi
@@ -48,6 +48,7 @@ public class HomeRepository {
 
             @Override
             public void onFailure(Call<List<CategoryResponse>> call, Throwable t) {
+                Log.e("API_RESPONSE", "Failure: " + t.getMessage());
                 data.postValue(null); // báo lỗi
             }
         });

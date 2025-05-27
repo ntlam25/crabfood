@@ -83,7 +83,7 @@ public class OrderHistoryAdapter extends ListAdapter<OrderResponse, OrderHistory
                 binding.btnRate.setOnClickListener(v -> listener.onRateClicked(order));
                 binding.btnRate.setEnabled(true);
             }
-            if (!order.getOrderStatus().name().equals("DELIVERED")) {
+            if (!order.getOrderStatus().name().equals("SUCCESS")) {
                 binding.statusDot.setBackgroundResource(R.drawable.circle_red);
             } else {
                 binding.statusDot.setBackgroundResource(R.drawable.circle_green);

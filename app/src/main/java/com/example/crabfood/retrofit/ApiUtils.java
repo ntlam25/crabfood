@@ -7,11 +7,12 @@ import com.example.crabfood.service.CategoryService;
 import com.example.crabfood.service.FoodService;
 import com.example.crabfood.service.GoongGeocodeService;
 import com.example.crabfood.service.OrderService;
+import com.example.crabfood.service.OrderTrackingService;
 import com.example.crabfood.service.UserService;
 import com.example.crabfood.service.VendorService;
 
 public class ApiUtils {
-    public static final String BASE_URL = "http://192.168.1.3:8080/";
+    public static final String BASE_URL = "http://10.0.2.2:8080/";
     public static FoodService getFoodService()
     {
         return RetrofitClient.getClient(BASE_URL).create(FoodService.class);
@@ -49,5 +50,10 @@ public class ApiUtils {
     public static OrderService getOrderService()
     {
         return RetrofitClient.getClient(BASE_URL).create(OrderService.class);
+    }
+
+    public static OrderTrackingService getOrderTrackingService()
+    {
+        return RetrofitClient.getClient(BASE_URL).create(OrderTrackingService.class);
     }
 }

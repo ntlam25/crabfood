@@ -100,14 +100,9 @@ public class OnboardingActivity extends AppCompatActivity implements
     }
 
     private void finishOnboarding() {
-        // This is where you would navigate to your main app activity
-        // For example: startActivity(new Intent(this, HomeActivity.class));
-        // finish();
-
-        // For demo purposes, we'll just show a toast and finish the activity
         setFirstLaunchFalse();
         launchMainActivity();
-        Toast.makeText(this, "Getting started with the app", Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, "Chào mứng tới Crab Food", Toast.LENGTH_SHORT).show();
         finish();
     }
 

@@ -11,6 +11,17 @@ public class OptionChoiceResponse {
     public OptionChoiceResponse() {
     }
 
+    public OptionChoiceResponse(Long id, String name,
+                                String optionName,
+                                double priceAdjustment,
+                                Long optionId) {
+        this.id = id;
+        this.name = name;
+        this.optionName = optionName;
+        this.priceAdjustment = priceAdjustment;
+        this.optionId = optionId;
+    }
+
     public Long getId() {
         return id;
     }

@@ -9,7 +9,7 @@ public class FoodResponse {
     private String name;
     private String description;
     private double price;
-    private List<String> categories;
+    private List<SimpleCategory> categories;
     private String imageUrl;
     private int preparationTime;
     private List<FoodOptionResponse> options;
@@ -23,7 +23,7 @@ public class FoodResponse {
     }
 
     public FoodResponse(Long id, Long vendorId, String name, String description,
-                        double price, List<String> categories, String imageUrl,
+                        double price, List<SimpleCategory> categories, String imageUrl,
                         int preparationTime, List<FoodOptionResponse> options, boolean available) {
         this.id = id;
         this.vendorId = vendorId;
@@ -85,11 +85,11 @@ public class FoodResponse {
         this.rating = rating;
     }
 
-    public List<String> getCategories() {
+    public List<SimpleCategory> getCategories() {
         return categories;
     }
 
-    public void setCategories(List<String> categories) {
+    public void setCategories(List<SimpleCategory> categories) {
         this.categories = categories;
     }
 

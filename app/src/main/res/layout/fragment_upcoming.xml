@@ -22,7 +22,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:gravity="center"
-        android:text="No upcoming orders"
+        android:text="Hện tại chưa có đơn nào"
         android:textSize="16sp"
         android:visibility="gone" />
 

@@ -136,7 +136,7 @@ public class AllVendorNearbyFragment extends Fragment {
         if (checkLocationPermissions()) {
             locationHelper.startLocationUpdates();
         }
-        binding.swipeRefreshLayout.setRefreshing(true);
+        binding.swipeRefreshLayout.setRefreshing(false);
     }
 
     private void observe() {

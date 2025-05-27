@@ -10,6 +10,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -18,7 +19,10 @@ import com.example.crabfood.adapter.OrderHistoryAdapter;
 import com.example.crabfood.cores.TaggedError;
 import com.example.crabfood.cores.enums.ErrorSource;
 import com.example.crabfood.databinding.FragmentOrderHistoryBinding;
+import com.example.crabfood.helpers.CartHelper;
+import com.example.crabfood.model.CartItemEntity;
 import com.example.crabfood.model.OrderResponse;
+import com.example.crabfood.ui.cart.CartViewModel;
 import com.google.android.material.snackbar.Snackbar;
 
 import org.jetbrains.annotations.Nullable;
@@ -32,6 +36,7 @@ public class OrderHistoryFragment extends Fragment {
     private OrderViewModel viewModel;
     private RecyclerView recyclerView;
     private OrderHistoryAdapter adapter;
+    private CartViewModel cartViewModel;
     private TextView emptyView;
 
     @Nullable
@@ -52,6 +57,7 @@ public class OrderHistoryFragment extends Fragment {
 
         // Share ViewModel with parent fragment
         viewModel = new ViewModelProvider(requireParentFragment()).get(OrderViewModel.class);
+        cartViewModel = new ViewModelProvider(requireActivity()).get(CartViewModel.class);
         loadData();
         setupSwipeRefresh();
         observeViewModel();
@@ -73,8 +79,9 @@ public class OrderHistoryFragment extends Fragment {
 
                     @Override
                     public void onReorderClicked(OrderResponse order) {
-                        // Handle reordering
-                        Snackbar.make(requireView(), "Click vào mua lại", Snackbar.LENGTH_SHORT).show();
+                        if (cartViewModel.reOrder(requireContext(), order)) {
+                            Navigation.findNavController(binding.getRoot()).navigate(R.id.cartFragment);
+                        }
                     }
                 });
         recyclerView.setAdapter(adapter);
@@ -87,7 +94,7 @@ public class OrderHistoryFragment extends Fragment {
     private void observeViewModel() {
         viewModel.getPastOrders().observe(getViewLifecycleOwner(), orders -> {
             if (orders != null && !orders.isEmpty()) {
-                adapter.submitList(orders);
+                adapter.submitList(new ArrayList<>(orders));
                 recyclerView.setVisibility(View.VISIBLE);
                 emptyView.setVisibility(View.GONE);
             } else {

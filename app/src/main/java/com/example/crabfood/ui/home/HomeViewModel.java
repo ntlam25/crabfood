@@ -16,7 +16,7 @@ import java.util.List;
 
 public class HomeViewModel extends ViewModel {
     private final HomeRepository repository;
-    private final MediatorLiveData<List<Object>> _categories = new MediatorLiveData<>();
+    private final MediatorLiveData<List<CategoryResponse>> _categories = new MediatorLiveData<>();
     private final MediatorLiveData<List<VendorResponse>> _vendors = new MediatorLiveData<>();
     private final MutableLiveData<String> _error = new MutableLiveData<>();
 
@@ -24,7 +24,7 @@ public class HomeViewModel extends ViewModel {
         repository = new HomeRepository();
     }
 
-    public LiveData<List<Object>> getCategories() {
+    public LiveData<List<CategoryResponse>> getCategories() {
         return _categories;
     }
 
@@ -42,10 +42,7 @@ public class HomeViewModel extends ViewModel {
 
         _categories.addSource(source, categories -> {
             if (categories != null) {
-                List<Object> combinedList = new ArrayList<>(categories);
-                Log.d("HomeVM", combinedList.size() + "");
-                combinedList.add("Xem thêm");
-                _categories.postValue(combinedList);
+                _categories.postValue(categories);
             } else {
                 _error.postValue("Tải danh sách danh mục thất bại");
             }

@@ -3,13 +3,10 @@ package com.example.crabfood.model.enums;
 public enum OrderStatus {
     PENDING("Chờ xác nhận"),
     ACCEPTED("Đã xác nhận"),
-    PREPARING("Đang chuẩn bị"),
-    READY("Đơn sẵn sàng"),
-    PICKED_UP("Đã nhận đơn"),
+    PICKED_UP("Nguời giao đã lấy hàng"),
     ON_THE_WAY("Đang giao"),
-    DELIVERED("Đã giao"),
-    CANCELLED("Đã huỷ"),
-    REJECTED("Đã từ chối");
+    SUCCESS("Đã giao"),
+    CANCELLED("Đã huỷ");
 
     private final String displayName;
 

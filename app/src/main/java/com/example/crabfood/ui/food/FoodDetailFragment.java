@@ -314,8 +314,6 @@ public class FoodDetailFragment extends Fragment {
                 radioGroup.setOrientation(LinearLayout.VERTICAL);
 
                 // Track whether this is a new selection
-                final boolean[] isFirstSelection = {true};
-
                 // Add radio buttons for each choice
                 boolean defaultFound = false;
                 RadioButton firstButton = null;
@@ -343,7 +341,7 @@ public class FoodDetailFragment extends Fragment {
                         defaultFound = true;
 
                         // Add default choice to selected choices
-                        Log.d(TAG, "setupFoodOptions: " + option.getOptionId());
+                        Log.d(TAG, "setupFoodOptions: Adding default choice for option " + option.getOptionId());
                         choice.setOptionId(option.getOptionId());
                         choice.setOptionName(option.getName());
                         selectedChoices.add(choice);
@@ -358,7 +356,7 @@ public class FoodDetailFragment extends Fragment {
 
                     // Add first choice to selected choices
                     OptionChoiceResponse firstChoice = (OptionChoiceResponse) firstButton.getTag(R.id.tag_choice);
-                    Log.d(TAG, "setupFoodOptions: " + option.getOptionId());
+                    Log.d(TAG, "setupFoodOptions: Adding first choice for option " + option.getOptionId());
                     firstChoice.setOptionId(option.getOptionId());
                     firstChoice.setOptionName(option.getName());
                     selectedChoices.add(firstChoice);
@@ -366,32 +364,21 @@ public class FoodDetailFragment extends Fragment {
 
                 // Set listener for radio group
                 radioGroup.setOnCheckedChangeListener((group, checkedId) -> {
-                    // Skip the first automatic selection event
-                    if (isFirstSelection[0]) {
-                        isFirstSelection[0] = false;
-                        return;
-                    }
-
                     RadioButton selectedButton = group.findViewById(checkedId);
                     if (selectedButton != null) {
                         OptionChoiceResponse selectedChoice = (OptionChoiceResponse) selectedButton.getTag(R.id.tag_choice);
+                        Long selectedOptionId = (Long) selectedButton.getTag(R.id.tag_option_id);
 
                         // Remove any previous selections for this option
-                        Iterator<OptionChoiceResponse> iterator = selectedChoices.iterator();
-                        while (iterator.hasNext()) {
-                            OptionChoiceResponse existingChoice = iterator.next();
-                            // Check if this choice belongs to the current option by comparing with choices list
-                            for (OptionChoiceResponse optionChoice : option.getChoices()) {
-                                if (existingChoice.equals(optionChoice)) {
-                                    iterator.remove();
-                                    break;
-                                }
-                            }
-                        }
+                        selectedChoices.removeIf(existingChoice -> {
+                            // Check if this choice belongs to the current option
+                            return existingChoice.getOptionId() != null &&
+                                    existingChoice.getOptionId().equals(selectedOptionId);
+                        });
 
                         // Add the new selection
-                        Log.d(TAG, "setupFoodOptions: " + option.getOptionId());
-                        selectedChoice.setOptionId(option.getOptionId());
+                        Log.d(TAG, "setupFoodOptions: Adding new choice for option " + selectedOptionId);
+                        selectedChoice.setOptionId(selectedOptionId);
                         selectedChoice.setOptionName(option.getName());
                         selectedChoices.add(selectedChoice);
 
