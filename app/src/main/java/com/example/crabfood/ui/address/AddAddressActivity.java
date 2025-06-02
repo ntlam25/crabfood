@@ -32,6 +32,7 @@ import com.example.crabfood.retrofit.RetrofitInstance;
 import com.example.crabfood.service.GoongGeocodeService;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.material.snackbar.Snackbar;
 import com.mapbox.mapboxsdk.Mapbox;
 import com.mapbox.mapboxsdk.annotations.MarkerOptions;
 import com.mapbox.mapboxsdk.camera.CameraPosition;
@@ -57,7 +58,6 @@ public class AddAddressActivity extends AppCompatActivity {
     private AddressViewModel viewModel;
     private List<AutoComplete> allSuggestions = new ArrayList<>();
     private FusedLocationProviderClient fusedLocationClient;
-    private static final int LOCATION_PERMISSION_REQUEST_CODE = 1;
     private Call<AutoCompleteResponse> currentCall;
 
     private LatLng selectedLocation;
@@ -69,7 +69,7 @@ public class AddAddressActivity extends AppCompatActivity {
                 if (result) {
                     getCurrentLocation();
                 } else {
-                    Toast.makeText(this, "Location permission is required", Toast.LENGTH_SHORT).show();
+                    Snackbar.make(binding.getRoot(), "Cần cấp quyền vị trí", Snackbar.LENGTH_SHORT).show();
                 }
             });
 

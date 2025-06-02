@@ -5,130 +5,108 @@ import android.util.Log;
 
 import com.example.crabfood.helpers.SessionManager;
 import com.example.crabfood.model.LocationUpdateResponse;
+import com.example.crabfood.model.WebSocketMessage;
+import com.example.crabfood.model.WebSocketMessageType;
 import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
-import org.java_websocket.handshake.ServerHandshake;
+import java.lang.reflect.Type;
+import java.util.concurrent.TimeUnit;
 
-import java.net.URI;
-import java.net.URISyntaxException;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
+import okhttp3.WebSocket;
+import okhttp3.WebSocketListener;
 
 public class WebSocketClient {
     private static final String TAG = "WebSocketClient";
-    private org.java_websocket.client.WebSocketClient client;
+    private static final String WS_BASE_URL = "ws://10.0.2.2:8080/ws";
+    
     private final Context context;
     private final long orderId;
-    private final Gson gson = new Gson();
+    private final Gson gson;
     private LocationUpdateListener listener;
     private SessionManager sessionManager;
+    private WebSocket webSocket;
 
     public WebSocketClient(Context context, long orderId) {
         this.context = context;
         this.orderId = orderId;
         this.sessionManager = new SessionManager(context);
+        this.gson = new Gson();
     }
 
     public void connect() {
-        try {
-            // Get WebSocket URL from config
-            String wsBaseUrl = "ws://your-api-url/ws"; // Update with your server's WebSocket URL
-            URI uri = new URI(wsBaseUrl + "/stomp");
+        OkHttpClient client = new OkHttpClient.Builder()
+                .readTimeout(0, TimeUnit.MILLISECONDS)
+                .build();
 
-            client = new org.java_websocket.client.WebSocketClient(uri) {
-                @Override
-                public void onOpen(ServerHandshake handshakedata) {
-                    Log.d(TAG, "WebSocket connection opened");
+        // Connect to the main WebSocket endpoint
+        Request request = new Request.Builder()
+                .url(WS_BASE_URL)
+                .build();
 
-                    // Subscribe to order-specific location updates
-                    subscribeToLocationUpdates();
-                }
-
-                @Override
-                public void onMessage(String message) {
-                    Log.d(TAG, "WebSocket message received: " + message);
-
-                    try {
-                        // Parse the message based on STOMP protocol
-                        if (message.startsWith("MESSAGE")) {
-                            // Extract JSON payload from STOMP message
-                            int bodyStart = message.indexOf("\n\n") + 2;
-                            if (bodyStart > 1 && bodyStart < message.length()) {
-                                String body = message.substring(bodyStart);
-
-                                // Parse the location update
-                                LocationUpdateResponse locationUpdate = gson.fromJson(body, LocationUpdateResponse.class);
-
-                                // Notify listener
-                                if (listener != null) {
-                                    listener.onLocationUpdate(locationUpdate);
-                                }
-                            }
-                        }
-                    } catch (Exception e) {
-                        Log.e(TAG, "Error parsing WebSocket message", e);
-                    }
-                }
-
-                @Override
-                public void onClose(int code, String reason, boolean remote) {
-                    Log.d(TAG, "WebSocket connection closed: " + reason);
-
-                    // Attempt to reconnect after a delay if closed unexpectedly
-                    if (remote && code != 1000) {
-                        try {
-                            Thread.sleep(5000);
-                            connect();
-                        } catch (InterruptedException e) {
-                            Log.e(TAG, "Reconnection interrupted", e);
-                        }
-                    }
-                }
-
-                @Override
-                public void onError(Exception ex) {
-                    Log.e(TAG, "WebSocket error", ex);
-                    if (listener != null) {
-                        listener.onConnectionError(ex.getMessage());
-                    }
-                }
-            };
-
-            // Connect to the WebSocket server
-            client.connect();
-
-        } catch (URISyntaxException e) {
-            Log.e(TAG, "Invalid WebSocket URI", e);
-            if (listener != null) {
-                listener.onConnectionError("Invalid WebSocket URI: " + e.getMessage());
+        webSocket = client.newWebSocket(request, new WebSocketListener() {
+            @Override
+            public void onOpen(WebSocket webSocket, Response response) {
+                Log.d(TAG, "WebSocket Connected");
+                // Subscribe to order tracking updates
+                subscribeToOrderTracking();
             }
-        }
+
+            @Override
+            public void onMessage(WebSocket webSocket, String text) {
+                Log.d(TAG, "Received message: " + text);
+                try {
+                    Type messageType = new TypeToken<WebSocketMessage<LocationUpdateResponse>>(){}.getType();
+                    WebSocketMessage<LocationUpdateResponse> message = gson.fromJson(text, messageType);
+                    
+                    if (message.getType() == WebSocketMessageType.RIDER_LOCATION_UPDATE) {
+                        LocationUpdateResponse locationUpdate = message.getPayload();
+                        if (listener != null) {
+                            listener.onLocationUpdate(locationUpdate);
+                        }
+                    }
+                } catch (Exception e) {
+                    Log.e(TAG, "Error parsing message", e);
+                }
+            }
+
+            @Override
+            public void onFailure(WebSocket webSocket, Throwable t, Response response) {
+                Log.e(TAG, "WebSocket Error", t);
+                if (listener != null) {
+                    listener.onConnectionError(t.getMessage());
+                }
+            }
+
+            @Override
+            public void onClosed(WebSocket webSocket, int code, String reason) {
+                Log.d(TAG, "WebSocket Closed");
+            }
+        });
     }
 
-    private void subscribeToLocationUpdates() {
-        if (client == null || !client.isOpen()) return;
+    private void subscribeToOrderTracking() {
+        if (webSocket == null) return;
 
-        // STOMP subscription message
-        String subscribeFrame = "SUBSCRIBE\n" +
-                "id:sub-" + orderId + "\n" +
-                "destination:/topic/location/" + orderId + "\n" +
-                "\n\0";
+        // Create subscription message
+        WebSocketMessage<Long> subscribeMessage = new WebSocketMessage<>(
+            WebSocketMessageType.ORDER_TRACKING_UPDATE,
+            orderId
+        );
 
-        client.send(subscribeFrame);
-        Log.d(TAG, "Subscribed to location updates for order ID: " + orderId);
+        // Send subscription message
+        String message = gson.toJson(subscribeMessage);
+        webSocket.send(message);
+        Log.d(TAG, "Subscribed to order tracking for order ID: " + orderId);
     }
 
     public void disconnect() {
-        if (client != null && client.isOpen()) {
-            try {
-                // STOMP disconnect message
-                String disconnectFrame = "DISCONNECT\n\n\0";
-                client.send(disconnectFrame);
-
-                // Close WebSocket connection
-                client.close();
-                Log.d(TAG, "WebSocket disconnected");
-            } catch (Exception e) {
-                Log.e(TAG, "Error disconnecting WebSocket", e);
-            }
+        if (webSocket != null) {
+            webSocket.close(1000, "Normal closure");
+            webSocket = null;
         }
     }
 

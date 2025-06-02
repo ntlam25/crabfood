@@ -3,6 +3,7 @@ package com.example.crabfood.service;
 import com.example.crabfood.model.OrderRequest;
 import com.example.crabfood.model.OrderResponse;
 import com.example.crabfood.model.PaymentResponse;
+import com.example.crabfood.model.OrderTrackingInfo;
 
 import java.util.List;
 
@@ -43,7 +44,5 @@ public interface OrderService {
 
     @POST("api/vnpay")
     Call<PaymentResponse> createUrlPayment(@Query("orderId") int orderId);
-
-
 
 }

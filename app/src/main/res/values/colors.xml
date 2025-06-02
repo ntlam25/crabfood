@@ -84,7 +84,7 @@
     <!-- Transparent -->
     <color name="transparent">#00000000</color>
     <color name="semi_transparent">#80000000</color>
-
+    <color name="gold">#FFD700</color>
     <color name="secondary_50">#fff9e6</color>
     <color name="secondary_100">#ffeeb0</color>
     <color name="secondary_200">#ffe58a</color>
@@ -131,4 +131,39 @@
     <color name="input_stroke_default">#BDBDBD</color>
     <color name="input_stroke_focused">@color/primary_500</color>
     <color name="input_stroke_error">@color/error</color>
+
+    <!-- Primary Colors -->
+    <color name="primary_dark">#E55A2B</color>
+    <color name="primary_light">#FF8A65</color>
+
+    <!-- Accent Colors -->
+    <color name="accent_color">#FF4081</color>
+    <color name="accent_dark">#C60055</color>
+
+    <!-- Background Colors -->
+    <color name="background_color">#F5F5F5</color>
+    <color name="surface_color">#FFFFFF</color>
+    <color name="card_background">#FFFFFF</color>
+
+    <!-- Text Colors -->
+    <color name="text_hint">#BDBDBD</color>
+
+    <!-- Input Colors -->
+    <color name="edittext_background">#FAFAFA</color>
+    <color name="border_color">#E0E0E0</color>
+    <color name="border_light">#EEEEEE</color>
+
+    <!-- Button Colors -->
+    <color name="button_disabled">#CCCCCC</color>
+
+    <!-- Rating Colors -->
+    <color name="rating_color">#FFC107</color>
+    <color name="rating_background">#E0E0E0</color>
+
+    <!-- Other Colors -->
+    <color name="placeholder_background">#F0F0F0</color>
+    <color name="quantity_background">#E8F5E8</color>
+    <color name="error_color">#F44336</color>
+    <color name="success_color">#4CAF50</color>
+
 </resources>

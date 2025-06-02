@@ -17,6 +17,10 @@ public class Event<T> {
         return content;
     }
 
+    public boolean isHasBeenHandled() {
+        return hasBeenHandled;
+    }
+
     public T peekContent() {
         return content;
     }

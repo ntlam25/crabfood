@@ -86,11 +86,6 @@ public class MainActivity extends AppCompatActivity {
 //        });
     }
 
-    private void updateCartBadge(int itemCount) {
-        // Cập nhật badge trên biểu tượng giỏ hàng
-        // Tùy thuộc vào cách triển khai UI
-    }
-
     private void setupNavigationView() {
 
         NavHostFragment navHostFragment = (NavHostFragment) getSupportFragmentManager()
@@ -108,6 +103,13 @@ public class MainActivity extends AppCompatActivity {
             if (item.getItemId() == R.id.homeFragment && destinationId != R.id.homeFragment) {
                 navController.popBackStack(R.id.homeFragment, false);
                 return true;
+            }
+
+            if (item.getItemId() == R.id.ordersFragment) {
+                // Nếu đã ở orderFragment nhưng đang ở CartFragment, pop stack về Order
+                navController.popBackStack(R.id.ordersFragment, false);
+            } else {
+                NavigationUI.onNavDestinationSelected(item, navController);
             }
 
             // Cho phép NavigationUI xử lý bình thường

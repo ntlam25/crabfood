@@ -9,23 +9,14 @@ public enum OrderTrackingStatus {
     @SerializedName("ACCEPTED")
     ACCEPTED,
 
-    @SerializedName("PREPARING")
-    PREPARING,
-
-    @SerializedName("READY_FOR_PICKUP")
-    READY_FOR_PICKUP,
-
     @SerializedName("PICKED_UP")
     PICKED_UP,
 
     @SerializedName("ON_THE_WAY")
     ON_THE_WAY,
 
-    @SerializedName("ARRIVED")
-    ARRIVED,
-
-    @SerializedName("DELIVERED")
-    DELIVERED,
+    @SerializedName("SUCCESS")
+    SUCCESS,
 
     @SerializedName("CANCELLED")
     CANCELLED

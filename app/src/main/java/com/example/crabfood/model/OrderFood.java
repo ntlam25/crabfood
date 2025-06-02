@@ -1,11 +1,13 @@
 package com.example.crabfood.model;
 
-import java.io.Serializable;
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-public class OrderFood implements Serializable {
+public class OrderFood implements Parcelable {
     private Long id;
     private Long orderId;
     private Long foodId;
@@ -16,12 +18,72 @@ public class OrderFood implements Serializable {
     private Date createdAt;
     private List<OrderFoodChoice> choices = new ArrayList<>();
 
-    // Constructors
     public OrderFood() {
         this.quantity = 1;
     }
 
-    // Getters and Setters
+    protected OrderFood(Parcel in) {
+        id = in.readByte() == 0 ? null : in.readLong();
+        orderId = in.readByte() == 0 ? null : in.readLong();
+        foodId = in.readByte() == 0 ? null : in.readLong();
+        foodName = in.readString();
+        quantity = in.readInt();
+        foodPrice = in.readDouble();
+        foodImageUrl = in.readString();
+        long tmpDate = in.readLong();
+        createdAt = tmpDate == -1 ? null : new Date(tmpDate);
+        choices = in.createTypedArrayList(OrderFoodChoice.CREATOR);
+    }
+
+    public static final Creator<OrderFood> CREATOR = new Creator<OrderFood>() {
+        @Override
+        public OrderFood createFromParcel(Parcel in) {
+            return new OrderFood(in);
+        }
+
+        @Override
+        public OrderFood[] newArray(int size) {
+            return new OrderFood[size];
+        }
+    };
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        if (id == null) {
+            dest.writeByte((byte) 0);
+        } else {
+            dest.writeByte((byte) 1);
+            dest.writeLong(id);
+        }
+
+        if (orderId == null) {
+            dest.writeByte((byte) 0);
+        } else {
+            dest.writeByte((byte) 1);
+            dest.writeLong(orderId);
+        }
+
+        if (foodId == null) {
+            dest.writeByte((byte) 0);
+        } else {
+            dest.writeByte((byte) 1);
+            dest.writeLong(foodId);
+        }
+
+        dest.writeString(foodName);
+        dest.writeInt(quantity);
+        dest.writeDouble(foodPrice);
+        dest.writeString(foodImageUrl);
+        dest.writeLong(createdAt != null ? createdAt.getTime() : -1);
+        dest.writeTypedList(choices);
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    // Getters and Setters (không thay đổi)
     public Long getId() {
         return id;
     }
@@ -70,6 +132,13 @@ public class OrderFood implements Serializable {
         this.foodPrice = foodPrice;
     }
 
+    public String getFoodImageUrl() {
+        return foodImageUrl;
+    }
+
+    public void setFoodImageUrl(String foodImageUrl) {
+        this.foodImageUrl = foodImageUrl;
+    }
 
     public Date getCreatedAt() {
         return createdAt;
@@ -87,15 +156,6 @@ public class OrderFood implements Serializable {
         this.choices = choices;
     }
 
-    public String getFoodImageUrl() {
-        return foodImageUrl;
-    }
-
-    public void setFoodImageUrl(String foodImageUrl) {
-        this.foodImageUrl = foodImageUrl;
-    }
-
-    // Helper methods
     public double getTotalPrice() {
         double choicesPrice = 0;
         for (OrderFoodChoice choice : choices) {
@@ -115,7 +175,7 @@ public class OrderFood implements Serializable {
             sb.append(choice.getChoiceName());
 
             if (choice.getPriceAdjustment() > 0) {
-                sb.append(String.format(" (+$%.2f)", choice.getPriceAdjustment()));
+                sb.append(String.format(" (%,.0f đ)", choice.getPriceAdjustment()));
             }
 
             if (i < choices.size() - 1) {

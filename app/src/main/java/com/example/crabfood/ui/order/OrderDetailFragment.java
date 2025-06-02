@@ -29,6 +29,7 @@ import com.example.crabfood.model.OrderFood;
 import com.example.crabfood.model.OrderFoodChoice;
 import com.example.crabfood.model.OrderResponse;
 import com.example.crabfood.model.enums.MenuAction;
+import com.example.crabfood.model.enums.OrderStatus;
 import com.example.crabfood.ui.cart.CartItemListFragment;
 import com.example.crabfood.ui.vendor.VendorListFragment;
 import com.google.android.material.snackbar.Snackbar;
@@ -136,6 +137,10 @@ public class OrderDetailFragment extends Fragment {
                         order.getPaymentMethod() == "CASH"
                                 ? "Tiền mặt" : order.getPaymentMethod());
         menuCheckoutAdapter.updateSelectedContentByAction(MenuAction.MY_PROMOTIONS, order.getCouponId()+"");
+
+        if (order.getOrderStatus() == OrderStatus.CANCELLED) {
+            binding.bottomLayout.setVisibility(View.GONE);
+        }
     }
 
     private void setupMenuItem() {

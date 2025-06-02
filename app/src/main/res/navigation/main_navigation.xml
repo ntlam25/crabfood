@@ -192,4 +192,29 @@
             app:destination="@+id/checkoutFragment" />
     </fragment>
 
+    <fragment
+        android:id="@+id/reviewFragment"
+        android:name="com.example.crabfood.ui.review.ReviewFragment"
+        android:label="Đánh giá đơn hàng"
+        tools:layout="@layout/fragment_review">
+        <argument
+            android:name="orderId"
+            app:argType="long" />
+        <argument
+            android:name="vendorId"
+            app:argType="long" />
+        <argument
+            android:name="riderId"
+            app:argType="long" />
+        <argument
+            android:name="orderCode"
+            app:argType="string" />
+        <argument
+            android:name="vendorName"
+            app:argType="string" />
+        <argument
+            android:name="totalAmount"
+            app:argType="string" />
+    </fragment>
+
 </navigation>

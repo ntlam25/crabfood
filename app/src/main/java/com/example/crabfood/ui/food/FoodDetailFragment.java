@@ -11,7 +11,6 @@ import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -30,11 +29,8 @@ import com.example.crabfood.ui.vendor.VendorDetailViewModel;
 import com.google.android.material.snackbar.Snackbar;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 public class FoodDetailFragment extends Fragment {
 
@@ -103,7 +99,7 @@ public class FoodDetailFragment extends Fragment {
         viewModel.getError().observe(getViewLifecycleOwner(), errorMsg -> {
             if (errorMsg != null && !errorMsg.isEmpty()) {
                 Log.d("Food Detail: ", errorMsg);
-                Toast.makeText(requireContext(), errorMsg, Toast.LENGTH_SHORT).show();
+                Snackbar.make(binding.getRoot(), errorMsg, Snackbar.LENGTH_SHORT).show();
             }
         });
 
@@ -126,6 +122,9 @@ public class FoodDetailFragment extends Fragment {
         binding.textViewNewPrice.setText(String.format("%.2f", food.getPrice()));
         binding.textViewDescription.setText(food.getDescription());
         binding.textViewRating.setText(String.format("%.1f", food.getRating()));
+        binding.textViewAvailable.setText(food.isAvailable() ? "Còn hàng" : "Hết hàng");
+        binding.textViewAvailable.setTextColor(
+                getResources().getColor(food.isAvailable() ? R.color.green_500 : R.color.red_500, null));
 
         // Update total price on initial load
         updateTotalPrice();
@@ -191,7 +190,11 @@ public class FoodDetailFragment extends Fragment {
 
     private void setupAddToCartButton() {
         binding.buttonAddToCart.setOnClickListener(v -> {
-            addToCart();
+            if (food.isAvailable()){
+                addToCart();
+            } else {
+                Snackbar.make(binding.getRoot(), "Món ăn này đã hết hàng!", Snackbar.LENGTH_SHORT).show();
+            }
         });
     }
 
@@ -240,9 +243,9 @@ public class FoodDetailFragment extends Fragment {
                 if (missingOptions.length() > 2) {
                     missingOptions.setLength(missingOptions.length() - 2);
                 }
-                Toast.makeText(requireContext(),
+                Snackbar.make(binding.getRoot(),
                         "Vui lòng chọn các tùy chọn bắt buộc: " + missingOptions.toString(),
-                        Toast.LENGTH_LONG).show();
+                        Snackbar.LENGTH_LONG).show();
                 return;
             }
 
@@ -256,7 +259,7 @@ public class FoodDetailFragment extends Fragment {
                 Navigation.findNavController(requireView()).navigateUp();
             }
         } else {
-            Toast.makeText(requireContext(), "Không thể thêm vào giỏ hàng!", Toast.LENGTH_SHORT).show();
+            Snackbar.make(binding.getRoot(), "Không thể thêm vào giỏ hàng!", Snackbar.LENGTH_SHORT).show();
         }
     }
 
@@ -455,9 +458,9 @@ public class FoodDetailFragment extends Fragment {
                             if (currentSelectionCount >= maxSelection) {
                                 // Uncheck this checkbox
                                 buttonView.setChecked(false);
-                                Toast.makeText(requireContext(),
+                                Snackbar.make(binding.getRoot(),
                                         "Bạn chỉ có thể chọn tối đa " + maxSelection + " lựa chọn",
-                                        Toast.LENGTH_SHORT).show();
+                                        Snackbar.LENGTH_SHORT).show();
                                 return;
                             }
 

@@ -26,6 +26,7 @@ public class OrderHistoryAdapter extends ListAdapter<OrderResponse, OrderHistory
     public interface OrderHistoryListener {
         void onRateClicked(OrderResponse order);
         void onReorderClicked(OrderResponse order);
+        void onItemClicked(OrderResponse order);
     }
 
     public OrderHistoryAdapter(OrderHistoryListener listener) {
@@ -77,12 +78,28 @@ public class OrderHistoryAdapter extends ListAdapter<OrderResponse, OrderHistory
             binding.tvOrderNumber.setText(order.getOrderNumber());
             binding.tvItemCount.setText(order.getOrderFoods().size() + " món");
             binding.tvOrderStatus.setText(order.getOrderStatus().getDisplayName());
+            
+            // Handle review button visibility and state
             if (order.getOrderStatus() == OrderStatus.CANCELLED) {
                 binding.btnRate.setEnabled(false);
+                binding.btnRate.setText("Đã huỷ");
+            } else if (order.getOrderStatus() == OrderStatus.SUCCESS) {
+                if (order.getReview() != null) {
+                    // Order has been reviewed
+                    binding.btnRate.setEnabled(true);
+                    binding.btnRate.setText("Đã đánh giá");
+                    binding.btnRate.setOnClickListener(v -> listener.onRateClicked(order));
+                } else {
+                    // Order hasn't been reviewed yet
+                    binding.btnRate.setEnabled(true);
+                    binding.btnRate.setText("Đánh giá");
+                    binding.btnRate.setOnClickListener(v -> listener.onRateClicked(order));
+                }
             } else {
-                binding.btnRate.setOnClickListener(v -> listener.onRateClicked(order));
-                binding.btnRate.setEnabled(true);
+                binding.btnRate.setEnabled(false);
+                binding.btnRate.setText("Chưa hoàn thành");
             }
+
             if (!order.getOrderStatus().name().equals("SUCCESS")) {
                 binding.statusDot.setBackgroundResource(R.drawable.circle_red);
             } else {
@@ -92,6 +109,9 @@ public class OrderHistoryAdapter extends ListAdapter<OrderResponse, OrderHistory
             binding.tvTotalAmount.setText(String.format(Locale.getDefault(), "%,.0f đ", order.getTotalAmount()));
 
             binding.btnReorder.setOnClickListener(v -> listener.onReorderClicked(order));
+            
+            // Add click listener to the entire item
+            binding.getRoot().setOnClickListener(v -> listener.onItemClicked(order));
         }
     }
 

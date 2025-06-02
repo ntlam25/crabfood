@@ -1,6 +1,6 @@
 package com.example.crabfood.cores.enums;
 
 public enum ErrorSource {
-    UPCOMING, HISTORY, DETAIL
+    UPCOMING, HISTORY, DETAIL, TRACKING
 }
 

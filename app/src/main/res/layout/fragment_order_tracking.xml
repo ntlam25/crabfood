@@ -45,239 +45,159 @@
         app:layout_constraintBottom_toTopOf="@id/driverInfoLayout" />
 
     <!-- Driver Info Section -->
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <androidx.cardview.widget.CardView
         android:id="@+id/driverInfoLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@drawable/rounded_white_background"
-        android:padding="16dp"
-        app:layout_constraintBottom_toTopOf="@id/deliveryInfoSection"
-        android:visibility="visible">
+        android:layout_margin="16dp"
+        app:cardCornerRadius="12dp"
+        app:cardElevation="4dp"
+        app:layout_constraintBottom_toTopOf="@id/statusLayout">
 
-        <de.hdodenhof.circleimageview.CircleImageView
-            android:id="@+id/driverImageView"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:src="@drawable/avata_placeholder"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent" />
-
-        <TextView
-            android:id="@+id/driverNameText"
-            android:layout_width="0dp"
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="12dp"
-            android:text="David Wayne"
-            android:textSize="16sp"
-            android:textStyle="bold"
-            app:layout_constraintStart_toEndOf="@id/driverImageView"
-            app:layout_constraintTop_toTopOf="@id/driverImageView"
-            app:layout_constraintEnd_toStartOf="@id/chatButton" />
+            android:padding="16dp">
 
-        <TextView
-            android:id="@+id/driverRatingText"
-            android:layout_width="wrap_content"
+            <de.hdodenhof.circleimageview.CircleImageView
+                android:id="@+id/driverImageView"
+                android:layout_width="60dp"
+                android:layout_height="60dp"
+                android:src="@drawable/avata_placeholder"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/driverNameText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                app:layout_constraintStart_toEndOf="@id/driverImageView"
+                app:layout_constraintTop_toTopOf="@id/driverImageView" />
+
+            <TextView
+                android:id="@+id/driverRatingText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="4dp"
+                android:textSize="14sp"
+                app:layout_constraintStart_toEndOf="@id/driverImageView"
+                app:layout_constraintTop_toBottomOf="@id/driverNameText" />
+
+            <TextView
+                android:id="@+id/driverIdText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="4dp"
+                android:textSize="14sp"
+                app:layout_constraintStart_toEndOf="@id/driverImageView"
+                app:layout_constraintTop_toBottomOf="@id/driverRatingText" />
+
+            <ImageButton
+                android:id="@+id/callButton"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:background="@drawable/circle_button_background"
+                android:src="@drawable/ic_call"
+                app:layout_constraintEnd_toStartOf="@id/chatButton"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                android:layout_marginEnd="8dp" />
+
+            <ImageButton
+                android:id="@+id/chatButton"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:background="@drawable/circle_button_background"
+                android:src="@drawable/ic_chat"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.cardview.widget.CardView>
+
+    <!-- Status Section -->
+    <androidx.cardview.widget.CardView
+        android:id="@+id/statusLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="16dp"
+        app:cardCornerRadius="12dp"
+        app:cardElevation="4dp"
+        app:layout_constraintBottom_toBottomOf="parent">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="12dp"
-            android:drawableStart="@drawable/ic_star_svg"
-            android:drawablePadding="4dp"
-            android:text="4.9"
-            android:textSize="14sp"
-            app:layout_constraintStart_toEndOf="@id/driverImageView"
-            app:layout_constraintTop_toBottomOf="@id/driverNameText" />
+            android:padding="16dp">
 
-        <TextView
-            android:id="@+id/driverIdText"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="12dp"
-            android:text="ID DW2125"
-            android:layout_marginLeft="8dp"
-            android:textSize="14sp"
-            app:layout_constraintStart_toEndOf="@id/driverRatingText"
-            app:layout_constraintTop_toBottomOf="@id/driverNameText"
-            app:layout_constraintBottom_toBottomOf="@id/driverRatingText" />
+            <TextView
+                android:id="@+id/statusText"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/estimatedTimeText"
+                app:layout_constraintTop_toTopOf="parent" />
 
-        <ImageButton
-            android:id="@+id/chatButton"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:layout_marginEnd="8dp"
-            android:background="@drawable/rounded_white_background"
-            android:src="@drawable/ic_message"
-            app:layout_constraintEnd_toStartOf="@id/callButton"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent" />
+            <TextView
+                android:id="@+id/estimatedTimeText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="14sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
 
-        <ImageButton
-            android:id="@+id/callButton"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:background="@drawable/rounded_white_background"
-            android:src="@drawable/ic_calling"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent" />
-    </androidx.constraintlayout.widget.ConstraintLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.cardview.widget.CardView>
 
-    <!-- Finding Driver Layout (Initially GONE) -->
+    <!-- Finding Driver Layout -->
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/findingDriverLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@drawable/rounded_white_background"
         android:padding="16dp"
-        app:layout_constraintBottom_toTopOf="@id/deliveryInfoSection"
-        android:visibility="gone">
+        android:visibility="gone"
+        app:layout_constraintBottom_toTopOf="@id/statusLayout">
 
-        <de.hdodenhof.circleimageview.CircleImageView
-            android:id="@+id/findingDriverImageView"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:src="@drawable/avata_placeholder"
+        <com.airbnb.lottie.LottieAnimationView
+            android:id="@+id/findingDriverAnimation"
+            android:layout_width="200dp"
+            android:layout_height="200dp"
             app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent" />
+            app:lottie_autoPlay="true"
+            app:lottie_loop="true"
+            app:lottie_rawRes="@raw/finding_driver" />
 
         <TextView
-            android:id="@+id/findingDriverText"
-            android:layout_width="0dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="12dp"
-            android:text="Finding Driver ..."
-            android:textSize="16sp"
+            android:text="Finding a driver..."
+            android:textSize="18sp"
             android:textStyle="bold"
-            app:layout_constraintStart_toEndOf="@id/findingDriverImageView"
-            app:layout_constraintTop_toTopOf="@id/findingDriverImageView"
-            app:layout_constraintBottom_toBottomOf="@id/findingDriverImageView"
-            app:layout_constraintEnd_toEndOf="parent" />
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/findingDriverAnimation" />
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <!-- Delivery Progress Section -->
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/deliveryInfoSection"
-        android:layout_width="match_parent"
+    <!-- Progress Bar -->
+    <ProgressBar
+        android:id="@+id/progressBar"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:padding="16dp"
-        app:layout_constraintBottom_toBottomOf="parent">
-
-        <!-- Delivery Progress Indicator -->
-        <LinearLayout
-            android:id="@+id/progressIndicator"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center"
-            app:layout_constraintTop_toTopOf="parent">
-
-            <ImageView
-                android:id="@+id/restaurantIcon"
-                android:layout_width="24dp"
-                android:layout_height="24dp"
-                android:src="@drawable/ic_shop"
-                app:tint="#FF5722" />
-
-            <View
-                android:id="@+id/line1"
-                android:layout_width="0dp"
-                android:layout_height="2dp"
-                android:layout_weight="1"
-                android:background="#FF5722" />
-
-            <ImageView
-                android:id="@+id/packageIcon"
-                android:layout_width="24dp"
-                android:layout_height="24dp"
-                android:src="@drawable/ic_package"
-                app:tint="#FF5722" />
-
-            <View
-                android:id="@+id/line2"
-                android:layout_width="0dp"
-                android:layout_height="2dp"
-                android:layout_weight="1"
-                android:background="#FF5722" />
-
-            <ImageView
-                android:id="@+id/deliveryIcon"
-                android:layout_width="24dp"
-                android:layout_height="24dp"
-                android:src="@drawable/ic_delivery"
-                app:tint="#CCCCCC" />
-
-            <View
-                android:id="@+id/line3"
-                android:layout_width="0dp"
-                android:layout_height="2dp"
-                android:layout_weight="1"
-                android:background="#CCCCCC" />
-
-            <ImageView
-                android:id="@+id/completeIcon"
-                android:layout_width="24dp"
-                android:layout_height="24dp"
-                android:src="@drawable/ic_check"
-                app:tint="#CCCCCC" />
-        </LinearLayout>
-
-        <!-- Estimated Delivery Time -->
-        <TextView
-            android:id="@+id/estimatedTimeLabel"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:text="Estimated Delivery Time"
-            android:textSize="14sp"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/progressIndicator" />
-
-        <TextView
-            android:id="@+id/estimatedTimeText"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="10:25"
-            android:textSize="14sp"
-            android:textStyle="bold"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="@id/estimatedTimeLabel"
-            app:layout_constraintBottom_toBottomOf="@id/estimatedTimeLabel" />
-
-        <!-- My Order Section -->
-        <TextView
-            android:id="@+id/myOrderLabel"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
-            android:text="My Order"
-            android:textSize="16sp"
-            android:textStyle="bold"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/estimatedTimeLabel" />
-
-        <Button
-            android:id="@+id/detailsButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Details"
-            android:textAllCaps="false"
-            android:textColor="#FF5722"
-            android:backgroundTint="@color/white"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="@id/myOrderLabel"
-            app:layout_constraintBottom_toBottomOf="@id/myOrderLabel" />
-
-        <!-- Cancel Order Button -->
-        <Button
-            android:id="@+id/cancelOrderButton"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:background="@android:color/transparent"
-            android:text="Cancel Order"
-            android:textAllCaps="false"
-            android:textColor="#FF5722"
-            app:layout_constraintTop_toBottomOf="@id/myOrderLabel" />
-    </androidx.constraintlayout.widget.ConstraintLayout>
+        android:visibility="gone"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

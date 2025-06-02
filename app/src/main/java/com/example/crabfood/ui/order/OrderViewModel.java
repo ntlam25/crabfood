@@ -17,6 +17,9 @@ import com.example.crabfood.model.VendorResponse;
 import com.example.crabfood.model.enums.OrderStatus;
 import com.example.crabfood.repository.OrderRepository;
 import com.example.crabfood.repository.VendorRepository;
+import com.example.crabfood.model.OrderTrackingInfo;
+import com.example.crabfood.model.LocationUpdateResponse;
+import com.example.crabfood.websocket.WebSocketClient;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,6 +35,9 @@ public class OrderViewModel extends AndroidViewModel {
     private final MutableLiveData<List<OrderResponse>> pastOrders = new MutableLiveData<>();
     private final MutableLiveData<Event<TaggedError>> errorMessage = new MutableLiveData<>();
     private final MutableLiveData<Boolean> isLoading = new MutableLiveData<>(false);
+    private final MutableLiveData<OrderTrackingInfo> trackingInfo = new MutableLiveData<>();
+    private final MutableLiveData<LocationUpdateResponse> locationUpdate = new MutableLiveData<>();
+    private WebSocketClient webSocketClient;
 
     public OrderViewModel(@NonNull Application application) {
         super(application);
@@ -64,6 +70,14 @@ public class OrderViewModel extends AndroidViewModel {
 
     public LiveData<Boolean> getIsLoading() {
         return isLoading;
+    }
+
+    public LiveData<OrderTrackingInfo> getTrackingInfo() {
+        return trackingInfo;
+    }
+
+    public LiveData<LocationUpdateResponse> getLocationUpdate() {
+        return locationUpdate;
     }
 
     public void loadUserOrdersHistory() {
@@ -159,10 +173,6 @@ public class OrderViewModel extends AndroidViewModel {
                 isLoading.postValue(false);
             }
         });
-    }
-
-    public void trackOrder(long orderId) {
-        // Implement order tracking logic
     }
 
     // Helper methods

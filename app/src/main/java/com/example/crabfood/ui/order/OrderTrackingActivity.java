@@ -5,29 +5,42 @@ import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.lineColor;
 import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.lineJoin;
 import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.lineWidth;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-
+import android.Manifest;
+import android.animation.ValueAnimator;
+import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
+import androidx.lifecycle.ViewModelProvider;
+
 import com.bumptech.glide.Glide;
 import com.example.crabfood.R;
 import com.example.crabfood.databinding.FragmentOrderTrackingBinding;
+import com.example.crabfood.helpers.LocationHelper;
 import com.example.crabfood.helpers.SessionManager;
+import com.example.crabfood.model.GoongDirectionsResponse;
 import com.example.crabfood.model.LocationUpdateResponse;
 import com.example.crabfood.model.OrderTrackingInfo;
-import com.example.crabfood.retrofit.ApiUtils;
-import com.example.crabfood.retrofit.RetrofitInstance;
-import com.example.crabfood.service.OrderTrackingService;
+import com.example.crabfood.model.enums.OrderTrackingStatus;
+import com.example.crabfood.service.GoongDirectionsService;
 import com.example.crabfood.websocket.WebSocketClient;
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.tasks.CancellationTokenSource;
 import com.mapbox.geojson.Feature;
 import com.mapbox.geojson.FeatureCollection;
 import com.mapbox.geojson.LineString;
 import com.mapbox.geojson.Point;
 import com.mapbox.mapboxsdk.Mapbox;
+import com.mapbox.mapboxsdk.annotations.Icon;
+import com.mapbox.mapboxsdk.annotations.IconFactory;
+import com.mapbox.mapboxsdk.annotations.Marker;
+import com.mapbox.mapboxsdk.annotations.MarkerOptions;
 import com.mapbox.mapboxsdk.camera.CameraPosition;
 import com.mapbox.mapboxsdk.camera.CameraUpdateFactory;
 import com.mapbox.mapboxsdk.geometry.LatLng;
@@ -45,7 +58,6 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-
 public class OrderTrackingActivity extends AppCompatActivity implements OnMapReadyCallback {
     private static final String TAG = "OrderTrackingActivity";
     private static final String SOURCE_ID = "route-source-id";
@@ -53,34 +65,49 @@ public class OrderTrackingActivity extends AppCompatActivity implements OnMapRea
     private static final String ICON_RESTAURANT_ID = "restaurant-icon-id";
     private static final String ICON_DESTINATION_ID = "destination-icon-id";
     private static final String ICON_RIDER_ID = "rider-icon-id";
+    private static final String GOONG_BASE_URL = "https://rsapi.goong.io/";
+    private static final String GOONG_API_KEY = "mRZ2f9dpAibVZozcAJiF26CdI4R2Q0OZHy4lV8iu";
+    private static final int LOCATION_PERMISSION_REQUEST_CODE = 1001;
 
     private FragmentOrderTrackingBinding binding;
     private MapboxMap mapboxMap;
-    private OrderTrackingService trackingService;
+    private GoongDirectionsService goongService;
     private WebSocketClient webSocketClient;
     private SessionManager sessionManager;
+    private OrderViewModel viewModel;
+    private LocationHelper locationHelper;
 
     private long orderId;
     private OrderTrackingInfo trackingInfo;
-//    private SymbolManager symbolManager;
-//    private PointAnnotationManager pointAnnotationManager;
-//    private Symbol riderSymbol;
-//    private final List<Symbol> markers = new ArrayList<>();
+    private List<LatLng> routePoints;
+    private ValueAnimator riderAnimator;
+    private Marker riderMarker;
+    private FusedLocationProviderClient fusedLocationClient;
+    private CancellationTokenSource cancellationTokenSource;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        // Initialize Mapbox
         Mapbox.getInstance(this, getString(R.string.mapbox_access_token));
-
+        sessionManager = new SessionManager(this);
         binding = FragmentOrderTrackingBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-        // Initialize services
-        trackingService = ApiUtils.getOrderTrackingService();
-        sessionManager = new SessionManager(this);
+        // Initialize location helper
+        locationHelper = new LocationHelper(this);
+        locationHelper.getLocationLiveData().observe(this, location -> {
+            if (location != null) {
+                Log.d(TAG, "Location updated: " + location.getLatitude() + ", " + location.getLongitude());
+            }
+        });
+        locationHelper.getLocationErrorLiveData().observe(this, error -> {
+            if (error != null) {
+                Log.e(TAG, "Location error: " + error);
+                Toast.makeText(this, "Location error: " + error, Toast.LENGTH_SHORT).show();
+            }
+        });
 
-        // Get orderId from intent
+        viewModel = new ViewModelProvider(this).get(OrderViewModel.class);
         orderId = getIntent().getLongExtra("orderId", -1);
         if (orderId == -1) {
             Toast.makeText(this, "Invalid order ID", Toast.LENGTH_SHORT).show();
@@ -90,6 +117,50 @@ public class OrderTrackingActivity extends AppCompatActivity implements OnMapRea
 
         setupUI();
         setupMapView(savedInstanceState);
+        observeViewModel();
+        checkLocationPermission();
+    }
+
+    private void checkLocationPermission() {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED) {
+            requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                    LOCATION_PERMISSION_REQUEST_CODE);
+        } else {
+            startLocationUpdates();
+        }
+    }
+
+    private void startLocationUpdates() {
+        LocationHelper.getCurrentLocation(this, new LocationHelper.LocationCallbackInterface() {
+            @Override
+            public void onLocationResult(android.location.Location location) {
+                if (location != null) {
+                    Log.d(TAG, "Current location: " + location.getLatitude() + ", " + location.getLongitude());
+                } else {
+                    Log.e(TAG, "Failed to get current location");
+                }
+            }
+
+            @Override
+            public void onLocationError(String error) {
+                Log.e(TAG, "Location error: " + error);
+                Toast.makeText(OrderTrackingActivity.this, "Location error: " + error, Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
+                                         @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == LOCATION_PERMISSION_REQUEST_CODE) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                startLocationUpdates();
+            } else {
+                Toast.makeText(this, "Location permission required for tracking", Toast.LENGTH_SHORT).show();
+            }
+        }
     }
 
     private void setupUI() {
@@ -102,14 +173,6 @@ public class OrderTrackingActivity extends AppCompatActivity implements OnMapRea
             // Implement chat functionality
             Toast.makeText(this, "Chat functionality to be implemented", Toast.LENGTH_SHORT).show();
         });
-        binding.cancelOrderButton.setOnClickListener(v -> {
-            // Implement cancel order functionality
-            Toast.makeText(this, "Cancel order functionality to be implemented", Toast.LENGTH_SHORT).show();
-        });
-        binding.detailsButton.setOnClickListener(v -> {
-            // Implement order details functionality
-            Toast.makeText(this, "Order details functionality to be implemented", Toast.LENGTH_SHORT).show();
-        });
     }
 
     private void setupMapView(Bundle savedInstanceState) {
@@ -117,19 +180,25 @@ public class OrderTrackingActivity extends AppCompatActivity implements OnMapRea
         binding.mapView.getMapAsync(this);
     }
 
+    private void observeViewModel() {
+        viewModel.getTrackingInfo().observe(this, this::updateTrackingInfo);
+        viewModel.getLocationUpdate().observe(this, this::updateRiderLocation);
+        viewModel.getErrorMessage().observe(this, event -> {
+            if (event != null && !event.isHasBeenHandled()) {
+                Toast.makeText(this, event.peekContent().message, Toast.LENGTH_SHORT).show();
+            }
+        });
+        viewModel.getIsLoading().observe(this, isLoading -> {
+            binding.progressBar.setVisibility(isLoading ? View.VISIBLE : View.GONE);
+        });
+    }
     @Override
     public void onMapReady(@NonNull MapboxMap mapboxMap) {
         this.mapboxMap = mapboxMap;
-
         mapboxMap.setStyle(Style.MAPBOX_STREETS, style -> {
             // Map is set up and the style has loaded
             // Now load the tracking info for the order
             loadTrackingInfo();
-
-            // Add symbol managers for markers
-//            symbolManager = new SymbolManager(binding.mapView, mapboxMap, style);
-//            symbolManager.setIconAllowOverlap(true);
-//            symbolManager.setTextAllowOverlap(true);
 
             // Add custom marker images
             loadIcons(style);
@@ -163,30 +232,7 @@ public class OrderTrackingActivity extends AppCompatActivity implements OnMapRea
             return;
         }
 
-        trackingService.getOrderTrackingInfo(orderId, customerId)
-                .enqueue(new Callback<OrderTrackingInfo>() {
-                    @Override
-                    public void onResponse(Call<OrderTrackingInfo> call, Response<OrderTrackingInfo> response) {
-                        if (response.isSuccessful() && response.body() != null) {
-                            trackingInfo = response.body();
-                            displayTrackingInfo();
 
-                            // Connect to WebSocket for real-time updates
-                            connectToWebSocket();
-                        } else {
-                            Toast.makeText(OrderTrackingActivity.this,
-                                    "Failed to load tracking information", Toast.LENGTH_SHORT).show();
-                        }
-                    }
-
-                    @Override
-                    public void onFailure(Call<OrderTrackingInfo> call, Throwable t) {
-                        Log.e(TAG, "Error loading tracking info", t);
-                        Toast.makeText(OrderTrackingActivity.this,
-                                "Error loading tracking information: " + t.getMessage(),
-                                Toast.LENGTH_SHORT).show();
-                    }
-                });
     }
 
     private void displayTrackingInfo() {
@@ -223,107 +269,66 @@ public class OrderTrackingActivity extends AppCompatActivity implements OnMapRea
     }
 
     private void updateDeliveryStatus(String status) {
-        // Check if status is null to avoid NPE
-        if (status == null) return;
-
-        // Reset all icons to gray
-        binding.restaurantIcon.setColorFilter(getResources().getColor(R.color.gray));
-        binding.packageIcon.setColorFilter(getResources().getColor(R.color.gray));
-        binding.deliveryIcon.setColorFilter(getResources().getColor(R.color.gray));
-        binding.completeIcon.setColorFilter(getResources().getColor(R.color.gray));
-
-        binding.line1.setBackgroundColor(getResources().getColor(R.color.gray));
-        binding.line2.setBackgroundColor(getResources().getColor(R.color.gray));
-        binding.line3.setBackgroundColor(getResources().getColor(R.color.gray));
-
-        // Set appropriate icons to orange based on status
-        int accentColor = getResources().getColor(R.color.primary_400);
-
-        switch (status) {
-            case "PENDING":
-            case "ACCEPTED":
-            case "PREPARING":
-                binding.restaurantIcon.setColorFilter(accentColor);
+        OrderTrackingStatus trackingStatus = OrderTrackingStatus.valueOf(status);
+        String statusText;
+        switch (trackingStatus) {
+            case PENDING:
+                statusText = "Waiting for restaurant to accept";
                 break;
-
-            case "READY_FOR_PICKUP":
-            case "PICKED_UP":
-                binding.restaurantIcon.setColorFilter(accentColor);
-                binding.line1.setBackgroundColor(accentColor);
-                binding.packageIcon.setColorFilter(accentColor);
+            case ACCEPTED:
+                statusText = "Restaurant accepted your order";
                 break;
-
-            case "ON_THE_WAY":
-                binding.restaurantIcon.setColorFilter(accentColor);
-                binding.line1.setBackgroundColor(accentColor);
-                binding.packageIcon.setColorFilter(accentColor);
-                binding.line2.setBackgroundColor(accentColor);
-                binding.deliveryIcon.setColorFilter(accentColor);
+            case PICKED_UP:
+                statusText = "Rider picked up your order";
                 break;
-
-            case "DELIVERED":
-                binding.restaurantIcon.setColorFilter(accentColor);
-                binding.line1.setBackgroundColor(accentColor);
-                binding.packageIcon.setColorFilter(accentColor);
-                binding.line2.setBackgroundColor(accentColor);
-                binding.deliveryIcon.setColorFilter(accentColor);
-                binding.line3.setBackgroundColor(accentColor);
-                binding.completeIcon.setColorFilter(accentColor);
+            case ON_THE_WAY:
+                statusText = "Rider is on the way";
                 break;
+            case SUCCESS:
+                statusText = "Order delivered";
+                break;
+            case CANCELLED:
+                statusText = "Order cancelled";
+                break;
+            default:
+                statusText = "Unknown status";
         }
+        binding.statusText.setText(statusText);
     }
 
     private void addMarkersToMap() {
-//        if (mapboxMap == null || trackingInfo == null || symbolManager == null) return;
-//
-//        // Clear existing markers
-//        symbolManager.delete(markers);
-//        markers.clear();
-//
-//        // Add restaurant marker
-//        if (trackingInfo.getSourceLatitude() != null && trackingInfo.getSourceLongitude() != null) {
-//            Symbol restaurantMarker = symbolManager.create(new SymbolOptions()
-//                    .withLatLng(new LatLng(trackingInfo.getSourceLatitude(), trackingInfo.getSourceLongitude()))
-//                    .withIconImage(ICON_RESTAURANT_ID)
-//                    .withIconSize(1.5f));
-//            markers.add(restaurantMarker);
-//        }
-//
-//        // Add destination marker
-//        if (trackingInfo.getDestinationLatitude() != null && trackingInfo.getDestinationLongitude() != null) {
-//            Symbol destinationMarker = symbolManager.create(new SymbolOptions()
-//                    .withLatLng(new LatLng(trackingInfo.getDestinationLatitude(), trackingInfo.getDestinationLongitude()))
-//                    .withIconImage(ICON_DESTINATION_ID)
-//                    .withIconSize(1.5f));
-//            markers.add(destinationMarker);
-//        }
+        if (mapboxMap == null || trackingInfo == null) return;
+
+        // Add restaurant marker
+        if (trackingInfo.getSourceLatitude() != null && trackingInfo.getSourceLongitude() != null) {
+            addMarker(new LatLng(trackingInfo.getSourceLatitude(), trackingInfo.getSourceLongitude()), ICON_RESTAURANT_ID);
+        }
+
+        // Add destination marker
+        if (trackingInfo.getDestinationLatitude() != null && trackingInfo.getDestinationLongitude() != null) {
+            addMarker(new LatLng(trackingInfo.getDestinationLatitude(), trackingInfo.getDestinationLongitude()), ICON_DESTINATION_ID);
+        }
 
         // Add rider marker
-        updateRiderLocation(trackingInfo.getCurrentLatitude(), trackingInfo.getCurrentLongitude());
+        if (trackingInfo.getCurrentLatitude() != null && trackingInfo.getCurrentLongitude() != null) {
+            addMarker(new LatLng(trackingInfo.getCurrentLatitude(), trackingInfo.getCurrentLongitude()), ICON_RIDER_ID);
+        }
 
         // Move camera to fit all markers
         zoomToFitMarkers();
     }
 
-    private void updateRiderLocation(Double latitude, Double longitude) {
-//        if (mapboxMap == null || symbolManager == null || latitude == null || longitude == null) return;
-//
-//        LatLng position = new LatLng(latitude, longitude);
-//
-//        // If rider marker already exists, update its position
-//        if (riderSymbol != null) {
-//            riderSymbol.setLatLng(position);
-//            symbolManager.update(riderSymbol);
-//        } else {
-//            // Create new rider marker
-//            riderSymbol = symbolManager.create(new SymbolOptions()
-//                    .withLatLng(position)
-//                    .withIconImage(ICON_RIDER_ID)
-//                    .withIconSize(1.5f));
-//        }
-//
-//        // Move camera to rider position
-//        mapboxMap.animateCamera(CameraUpdateFactory.newLatLngZoom(position, 15));
+    private void addMarker(LatLng position, String iconId) {
+        if (mapboxMap == null) return;
+        mapboxMap.getStyle(style -> {
+            GeoJsonSource source = style.getSourceAs(SOURCE_ID);
+            if (source != null) {
+                Point point = Point.fromLngLat(position.getLongitude(), position.getLatitude());
+                Feature feature = Feature.fromGeometry(point);
+                feature.addStringProperty("icon", iconId);
+                source.setGeoJson(FeatureCollection.fromFeature(feature));
+            }
+        });
     }
 
     private void zoomToFitMarkers() {
@@ -381,39 +386,102 @@ public class OrderTrackingActivity extends AppCompatActivity implements OnMapRea
     }
 
     private void fetchAndDisplayRoute() {
-        if (trackingInfo == null) return;
-
-        // For now, we'll just draw a straight line between points
-        // In a real application, you'd call a routing API to get actual routing directions
-
-        List<Point> routePoints = new ArrayList<>();
-
-        // Start from restaurant
-        if (trackingInfo.getSourceLatitude() != null && trackingInfo.getSourceLongitude() != null) {
-            routePoints.add(Point.fromLngLat(trackingInfo.getSourceLongitude(), trackingInfo.getSourceLatitude()));
+        if (trackingInfo == null) {
+            Log.e(TAG, "Cannot fetch route: trackingInfo is null");
+            return;
         }
 
-        // Add rider's current position
-        if (trackingInfo.getCurrentLatitude() != null && trackingInfo.getCurrentLongitude() != null) {
-            routePoints.add(Point.fromLngLat(trackingInfo.getCurrentLongitude(), trackingInfo.getCurrentLatitude()));
-        }
+        try {
+            if (trackingInfo.getSourceLatitude() == null || trackingInfo.getSourceLongitude() == null ||
+                trackingInfo.getDestinationLatitude() == null || trackingInfo.getDestinationLongitude() == null) {
+                Log.e(TAG, "Cannot fetch route: missing coordinates");
+                return;
+            }
 
-        // End at delivery destination
-        if (trackingInfo.getDestinationLatitude() != null && trackingInfo.getDestinationLongitude() != null) {
-            routePoints.add(Point.fromLngLat(trackingInfo.getDestinationLongitude(), trackingInfo.getDestinationLatitude()));
-        }
+            String origin = trackingInfo.getSourceLatitude() + "," + trackingInfo.getSourceLongitude();
+            String destination = trackingInfo.getDestinationLatitude() + "," + trackingInfo.getDestinationLongitude();
 
-        if (routePoints.size() >= 2) {
-            // Update the GeoJsonSource with the LineString
-            mapboxMap.getStyle(style -> {
-                GeoJsonSource source = style.getSourceAs(SOURCE_ID);
-                if (source != null) {
-                    LineString lineString = LineString.fromLngLats(routePoints);
-                    Feature feature = Feature.fromGeometry(lineString);
-                    source.setGeoJson(FeatureCollection.fromFeature(feature));
+            Log.d(TAG, "Fetching route from " + origin + " to " + destination);
+
+            goongService.getDirections(origin, destination, "car", GOONG_API_KEY)
+                    .enqueue(new Callback<GoongDirectionsResponse>() {
+                        @Override
+                        public void onResponse(Call<GoongDirectionsResponse> call, Response<GoongDirectionsResponse> response) {
+                            try {
+                                if (response.isSuccessful() && response.body() != null) {
+                                    GoongDirectionsResponse directionsResponse = response.body();
+                                    if (!directionsResponse.getRoutes().isEmpty()) {
+                                        routePoints = decodePolyline(directionsResponse.getRoutes().get(0).getLegs().get(0).getSteps());
+                                        if (!routePoints.isEmpty()) {
+                                            displayRouteOnMap();
+                                        } else {
+                                            Log.e(TAG, "No route points decoded");
+                                        }
+                                    } else {
+                                        Log.e(TAG, "No routes found in response");
+                                    }
+                                } else {
+                                    Log.e(TAG, "Error response from Goong API: " + response.code());
+                                }
+                            } catch (Exception e) {
+                                Log.e(TAG, "Error processing route response", e);
+                            }
+                        }
+
+                        @Override
+                        public void onFailure(Call<GoongDirectionsResponse> call, Throwable t) {
+                            Log.e(TAG, "Error fetching directions", t);
+                            try {
+                                Toast.makeText(OrderTrackingActivity.this,
+                                        "Error fetching route: " + t.getMessage(),
+                                        Toast.LENGTH_SHORT).show();
+                            } catch (Exception e) {
+                                Log.e(TAG, "Error showing toast", e);
+                            }
+                        }
+                    });
+        } catch (Exception e) {
+            Log.e(TAG, "Error in fetchAndDisplayRoute", e);
+        }
+    }
+
+    private List<LatLng> decodePolyline(List<GoongDirectionsResponse.Step> steps) {
+        List<LatLng> points = new ArrayList<>();
+        for (GoongDirectionsResponse.Step step : steps) {
+            String encodedPoints = step.getPolyline().getPoints();
+            // Split the encoded string into pairs of coordinates
+            String[] pairs = encodedPoints.split(" ");
+            for (String pair : pairs) {
+                String[] coords = pair.split(",");
+                if (coords.length == 2) {
+                    try {
+                        double lat = Double.parseDouble(coords[0]);
+                        double lng = Double.parseDouble(coords[1]);
+                        points.add(new LatLng(lat, lng));
+                    } catch (NumberFormatException e) {
+                        Log.e(TAG, "Error parsing coordinates: " + pair, e);
+                    }
                 }
-            });
+            }
         }
+        return points;
+    }
+
+    private void displayRouteOnMap() {
+        if (mapboxMap == null || routePoints == null || routePoints.isEmpty()) return;
+
+        mapboxMap.getStyle(style -> {
+            GeoJsonSource source = style.getSourceAs(SOURCE_ID);
+            if (source != null) {
+                List<Point> points = new ArrayList<>();
+                for (LatLng point : routePoints) {
+                    points.add(Point.fromLngLat(point.getLongitude(), point.getLatitude()));
+                }
+                LineString lineString = LineString.fromLngLats(points);
+                Feature feature = Feature.fromGeometry(lineString);
+                source.setGeoJson(FeatureCollection.fromFeature(feature));
+            }
+        });
     }
 
     private void connectToWebSocket() {
@@ -426,21 +494,21 @@ public class OrderTrackingActivity extends AppCompatActivity implements OnMapRea
             public void onLocationUpdate(LocationUpdateResponse locationUpdate) {
                 runOnUiThread(() -> {
                     // Update rider marker position
-                    updateRiderLocation(locationUpdate.getLatitude(), locationUpdate.getLongitude());
+                    updateRiderLocation(locationUpdate);
 
                     // Update estimated time
-                    if (locationUpdate.getEstimatedArrivalTime() != null) {
-                        binding.estimatedTimeText.setText(locationUpdate.getEstimatedArrivalTime());
+                    if (locationUpdate.getEstimatedDeliveryTime() != null) {
+                        binding.estimatedTimeText.setText(locationUpdate.getEstimatedDeliveryTime());
                     }
 
                     // Update delivery status if changed
                     if (locationUpdate.getStatus() != null) {
-                        updateDeliveryStatus(locationUpdate.getStatus());
+                        binding.statusText.setText(locationUpdate.getStatus().getDisplayName());
                     }
 
                     // Refresh the route
-                    trackingInfo.setCurrentLatitude(locationUpdate.getLatitude());
-                    trackingInfo.setCurrentLongitude(locationUpdate.getLongitude());
+                    trackingInfo.setCurrentLatitude(locationUpdate.getRiderLatitude());
+                    trackingInfo.setCurrentLongitude(locationUpdate.getRiderLongitude());
                     fetchAndDisplayRoute();
                 });
             }
@@ -457,6 +525,142 @@ public class OrderTrackingActivity extends AppCompatActivity implements OnMapRea
 
         // Connect to WebSocket
         webSocketClient.connect();
+    }
+
+    private void updateRiderLocation(LocationUpdateResponse update) {
+        if (update == null || mapboxMap == null) {
+            Log.e(TAG, "Cannot update rider location: update or mapboxMap is null");
+            return;
+        }
+
+        if (update.getRiderLatitude() == null || update.getRiderLongitude() == null) {
+            Log.e(TAG, "Cannot update rider location: missing coordinates");
+            return;
+        }
+
+        try {
+            LatLng newPosition = new LatLng(update.getRiderLatitude(), update.getRiderLongitude());
+
+            mapboxMap.getStyle(style -> {
+                try {
+                    if (riderMarker == null) {
+                        // Create rider marker if it doesn't exist
+                        Bitmap bitmap = style.getImage(ICON_RIDER_ID);
+                        if (bitmap != null) {
+                            IconFactory iconFactory = IconFactory.getInstance(this);
+                            Icon riderIcon = iconFactory.fromBitmap(bitmap);
+                            riderMarker = mapboxMap.addMarker(new MarkerOptions()
+                                    .position(newPosition)
+                                    .icon(riderIcon));
+                            Log.d(TAG, "Created new rider marker at " + newPosition);
+                        } else {
+                            Log.e(TAG, "Failed to get rider icon bitmap");
+                        }
+                    } else {
+                        // Animate rider marker movement
+                        if (riderAnimator != null) {
+                            riderAnimator.cancel();
+                        }
+
+                        LatLng oldPosition = riderMarker.getPosition();
+                        double distance = calculateDistance(oldPosition, newPosition);
+
+                        // Adjust animation duration based on distance
+                        long duration = Math.min(1000, Math.max(300, (long)(distance * 100)));
+
+                        riderAnimator = ValueAnimator.ofFloat(0f, 1f);
+                        riderAnimator.setDuration(duration);
+                        riderAnimator.addUpdateListener(animation -> {
+                            try {
+                                float fraction = animation.getAnimatedFraction();
+                                double lat = oldPosition.getLatitude() + (newPosition.getLatitude() - oldPosition.getLatitude()) * fraction;
+                                double lng = oldPosition.getLongitude() + (newPosition.getLongitude() - oldPosition.getLongitude()) * fraction;
+                                riderMarker.setPosition(new LatLng(lat, lng));
+                            } catch (Exception e) {
+                                Log.e(TAG, "Error updating marker position", e);
+                            }
+                        });
+                        riderAnimator.start();
+                        Log.d(TAG, "Animated rider marker from " + oldPosition + " to " + newPosition);
+                    }
+                } catch (Exception e) {
+                    Log.e(TAG, "Error updating rider marker", e);
+                }
+            });
+
+            // Update estimated time if available
+            if (update.getEstimatedDeliveryTime() != null) {
+                binding.estimatedTimeText.setText(update.getEstimatedDeliveryTime());
+            }
+
+            // Update delivery status if changed
+            if (update.getStatus() != null) {
+                binding.statusText.setText(update.getStatus().getDisplayName());
+            }
+        } catch (Exception e) {
+            Log.e(TAG, "Error in updateRiderLocation", e);
+        }
+    }
+
+    private double calculateDistance(LatLng point1, LatLng point2) {
+        double R = 6371e3; // Earth's radius in meters
+        double φ1 = Math.toRadians(point1.getLatitude());
+        double φ2 = Math.toRadians(point2.getLatitude());
+        double Δφ = Math.toRadians(point2.getLatitude() - point1.getLatitude());
+        double Δλ = Math.toRadians(point2.getLongitude() - point1.getLongitude());
+
+        double a = Math.sin(Δφ/2) * Math.sin(Δφ/2) +
+                Math.cos(φ1) * Math.cos(φ2) *
+                Math.sin(Δλ/2) * Math.sin(Δλ/2);
+        double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+
+        return R * c; // Distance in meters
+    }
+
+    private void updateTrackingInfo(OrderTrackingInfo orderTrackingInfo) {
+        if (orderTrackingInfo == null) return;
+
+        trackingInfo = orderTrackingInfo;
+        displayTrackingInfo();
+
+        // Update rider marker position
+        if (trackingInfo.getCurrentLatitude() != null && trackingInfo.getCurrentLongitude() != null) {
+            LatLng riderPosition = new LatLng(trackingInfo.getCurrentLatitude(), trackingInfo.getCurrentLongitude());
+            addMarker(riderPosition, ICON_RIDER_ID);
+        }
+
+        // Update delivery status
+        updateDeliveryStatus(trackingInfo.getStatus());
+
+        // Update estimated time
+        if (trackingInfo.getEstimatedDeliveryTime() != null) {
+            binding.estimatedTimeText.setText(trackingInfo.getEstimatedDeliveryTime());
+        }
+
+        // Show/hide driver info based on rider availability
+        binding.findingDriverLayout.setVisibility(
+                trackingInfo.getRiderId() != null ? View.GONE : View.VISIBLE);
+        binding.driverInfoLayout.setVisibility(
+                trackingInfo.getRiderId() != null ? View.VISIBLE : View.GONE);
+
+        // Update driver info if available
+        if (trackingInfo.getRiderId() != null) {
+            binding.driverNameText.setText(trackingInfo.getRiderName());
+            binding.driverRatingText.setText(String.valueOf(trackingInfo.getRiderRating()));
+            binding.driverIdText.setText("ID " + trackingInfo.getRiderId());
+
+            if (trackingInfo.getRiderImageUrl() != null && !trackingInfo.getRiderImageUrl().isEmpty()) {
+                Glide.with(binding.getRoot())
+                        .load(trackingInfo.getRiderImageUrl())
+                        .placeholder(R.drawable.avata_placeholder)
+                        .error(R.drawable.avatar_error)
+                        .into(binding.driverImageView);
+            }
+        }
+
+        // Add markers and route to map
+        addMarkersToMap();
+        fetchAndDisplayRoute();
     }
 
     @Override
@@ -491,11 +695,22 @@ public class OrderTrackingActivity extends AppCompatActivity implements OnMapRea
 
     @Override
     protected void onDestroy() {
-        super.onDestroy();
-        if (webSocketClient != null) {
-            webSocketClient.disconnect();
+        try {
+            if (webSocketClient != null) {
+                webSocketClient.disconnect();
+            }
+            if (riderAnimator != null) {
+                riderAnimator.cancel();
+            }
+            if (locationHelper != null) {
+                locationHelper.stopLocationUpdates();
+            }
+            binding.mapView.onDestroy();
+        } catch (Exception e) {
+            Log.e(TAG, "Error in onDestroy", e);
+        } finally {
+            super.onDestroy();
         }
-        binding.mapView.onDestroy();
     }
 
     @Override

@@ -1,5 +1,6 @@
 package com.example.crabfood.ui.order;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -78,7 +79,10 @@ public class UpcomingFragment extends Fragment {
 
                     @Override
                     public void onTrackClicked(OrderResponse order) {
-                        viewModel.trackOrder(order.getId());
+                        // Navigate to OrderTrackingActivity
+                        Intent intent = new Intent(requireContext(), OrderTrackingActivity.class);
+                        intent.putExtra("order_Id", order.getId());
+                        startActivity(intent);
                     }
 
                     @Override

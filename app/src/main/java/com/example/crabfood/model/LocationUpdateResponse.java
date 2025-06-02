@@ -1,65 +1,39 @@
 package com.example.crabfood.model;
 
-import com.google.gson.annotations.SerializedName;
-
-import java.time.LocalDateTime;
+import com.example.crabfood.model.enums.OrderStatus;
 
 /**
  * Model class for handling location update responses from the server
  */
 public class LocationUpdateResponse {
-    @SerializedName("riderId")
-    private Long riderId;
-
-    @SerializedName("orderId")
     private Long orderId;
+    private String orderNumber;
+    private OrderStatus status;
+    private Double riderLatitude;
+    private Double riderLongitude;
+    private String riderName;
+    private String riderPhone;
+    private String estimatedDeliveryTime;
+    private String currentLocation;
+    private String nextLocation;
 
-    @SerializedName("latitude")
-    private Double latitude;
+    public LocationUpdateResponse() {
+    }
 
-    @SerializedName("longitude")
-    private Double longitude;
-
-    @SerializedName("bearing")
-    private Double bearing;
-
-    @SerializedName("speed")
-    private Double speed;
-
-    @SerializedName("timestamp")
-    private String timestamp;
-
-    @SerializedName("estimatedArrivalTime")
-    private String estimatedArrivalTime;
-
-    @SerializedName("estimatedMinutes")
-    private Integer estimatedMinutes;
-
-    @SerializedName("status")
-    private String status;
-
-    public LocationUpdateResponse(Long riderId, Long orderId, Double latitude,
-                                  Double longitude, Double bearing, Double speed,
-                                  String estimatedArrivalTime,
-                                  Integer estimatedMinutes, String status) {
-        this.riderId = riderId;
+    public LocationUpdateResponse(Long orderId, String orderNumber, OrderStatus status,
+                                Double riderLatitude, Double riderLongitude, String riderName,
+                                String riderPhone, String estimatedDeliveryTime,
+                                String currentLocation, String nextLocation) {
         this.orderId = orderId;
-        this.latitude = latitude;
-        this.longitude = longitude;
-        this.bearing = bearing;
-        this.speed = speed;
-        this.estimatedArrivalTime = estimatedArrivalTime;
-        this.estimatedMinutes = estimatedMinutes;
+        this.orderNumber = orderNumber;
         this.status = status;
-    }
-
-    // Getters and Setters
-    public Long getRiderId() {
-        return riderId;
-    }
-
-    public void setRiderId(Long riderId) {
-        this.riderId = riderId;
+        this.riderLatitude = riderLatitude;
+        this.riderLongitude = riderLongitude;
+        this.riderName = riderName;
+        this.riderPhone = riderPhone;
+        this.estimatedDeliveryTime = estimatedDeliveryTime;
+        this.currentLocation = currentLocation;
+        this.nextLocation = nextLocation;
     }
 
     public Long getOrderId() {
@@ -70,67 +44,75 @@ public class LocationUpdateResponse {
         this.orderId = orderId;
     }
 
-    public Double getLatitude() {
-        return latitude;
+    public String getOrderNumber() {
+        return orderNumber;
     }
 
-    public void setLatitude(Double latitude) {
-        this.latitude = latitude;
+    public void setOrderNumber(String orderNumber) {
+        this.orderNumber = orderNumber;
     }
 
-    public Double getLongitude() {
-        return longitude;
-    }
-
-    public void setLongitude(Double longitude) {
-        this.longitude = longitude;
-    }
-
-    public Double getBearing() {
-        return bearing;
-    }
-
-    public void setBearing(Double bearing) {
-        this.bearing = bearing;
-    }
-
-    public Double getSpeed() {
-        return speed;
-    }
-
-    public void setSpeed(Double speed) {
-        this.speed = speed;
-    }
-
-    public String getTimestamp() {
-        return timestamp;
-    }
-
-    public void setTimestamp(String timestamp) {
-        this.timestamp = timestamp;
-    }
-
-    public String getEstimatedArrivalTime() {
-        return estimatedArrivalTime;
-    }
-
-    public void setEstimatedArrivalTime(String estimatedArrivalTime) {
-        this.estimatedArrivalTime = estimatedArrivalTime;
-    }
-
-    public Integer getEstimatedMinutes() {
-        return estimatedMinutes;
-    }
-
-    public void setEstimatedMinutes(Integer estimatedMinutes) {
-        this.estimatedMinutes = estimatedMinutes;
-    }
-
-    public String getStatus() {
+    public OrderStatus getStatus() {
         return status;
     }
 
-    public void setStatus(String status) {
+    public void setStatus(OrderStatus status) {
         this.status = status;
+    }
+
+    public Double getRiderLatitude() {
+        return riderLatitude;
+    }
+
+    public void setRiderLatitude(Double riderLatitude) {
+        this.riderLatitude = riderLatitude;
+    }
+
+    public Double getRiderLongitude() {
+        return riderLongitude;
+    }
+
+    public void setRiderLongitude(Double riderLongitude) {
+        this.riderLongitude = riderLongitude;
+    }
+
+    public String getRiderName() {
+        return riderName;
+    }
+
+    public void setRiderName(String riderName) {
+        this.riderName = riderName;
+    }
+
+    public String getRiderPhone() {
+        return riderPhone;
+    }
+
+    public void setRiderPhone(String riderPhone) {
+        this.riderPhone = riderPhone;
+    }
+
+    public String getEstimatedDeliveryTime() {
+        return estimatedDeliveryTime;
+    }
+
+    public void setEstimatedDeliveryTime(String estimatedDeliveryTime) {
+        this.estimatedDeliveryTime = estimatedDeliveryTime;
+    }
+
+    public String getCurrentLocation() {
+        return currentLocation;
+    }
+
+    public void setCurrentLocation(String currentLocation) {
+        this.currentLocation = currentLocation;
+    }
+
+    public String getNextLocation() {
+        return nextLocation;
+    }
+
+    public void setNextLocation(String nextLocation) {
+        this.nextLocation = nextLocation;
     }
 }

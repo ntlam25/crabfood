@@ -40,6 +40,7 @@ public class OrderResponse implements Serializable {
     private String recipientPhone;
     @SerializedName("items")
     private List<OrderFood> orderFoods = new ArrayList<>();
+    private ReviewResponse review;
 
     // Constructors
     public OrderResponse() {
@@ -240,6 +241,14 @@ public class OrderResponse implements Serializable {
 
     public List<OrderFood> getOrderFoods() {
         return orderFoods;
+    }
+
+    public ReviewResponse getReview() {
+        return review;
+    }
+
+    public void setReview(ReviewResponse review) {
+        this.review = review;
     }
 
     @Override

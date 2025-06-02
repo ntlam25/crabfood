@@ -5,9 +5,8 @@ import com.example.crabfood.service.AuthService;
 import com.example.crabfood.service.CartService;
 import com.example.crabfood.service.CategoryService;
 import com.example.crabfood.service.FoodService;
-import com.example.crabfood.service.GoongGeocodeService;
 import com.example.crabfood.service.OrderService;
-import com.example.crabfood.service.OrderTrackingService;
+import com.example.crabfood.service.ReviewApiService;
 import com.example.crabfood.service.UserService;
 import com.example.crabfood.service.VendorService;
 
@@ -52,8 +51,8 @@ public class ApiUtils {
         return RetrofitClient.getClient(BASE_URL).create(OrderService.class);
     }
 
-    public static OrderTrackingService getOrderTrackingService()
+    public static ReviewApiService getReviewService()
     {
-        return RetrofitClient.getClient(BASE_URL).create(OrderTrackingService.class);
+        return RetrofitClient.getClient(BASE_URL).create(ReviewApiService.class);
     }
 }
